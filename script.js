@@ -20,10 +20,10 @@ let gameRunning = true;
 let playerPosition = 50; // percentage from left
 let playerWidth = 80; // in pixels
 let playerSpeed = 10; // percentage per move (increased from 5 for smoother movement)
-let baseBallSpeed = 0.7; // base pixels per frame (reduced for easier gameplay)
-let ballSpeedIncrement = 0.05; // reduced for smoother difficulty progression
+let baseBallSpeed = 0.5; // base pixels per frame (reduced for easier gameplay)
+let ballSpeedIncrement = 0.02; // very small increment for gradual difficulty
 let spawnRate = 3000; // milliseconds (increased for easier start)
-let spawnRateMin = 800;
+let spawnRateMin = 1000;
 let lastSpawnTime = 0;
 let gameLoop;
 let balls = [];
@@ -33,6 +33,7 @@ let lastTime = 0;
 let scoreMultiplier = 1; // Base score multiplier
 let consecutiveCatches = 0; // Track consecutive catches for combo scoring
 let lastCatchTime = 0; // Track timing between catches
+let level = 1; // Current game level
 
 // Game area dimensions
 let gameWidth;
@@ -141,28 +142,22 @@ function createBall() {
     
     gameArea.appendChild(ball);
     
-    // Calculate ball speed based on score
-    let calculatedSpeed = baseBallSpeed;
+    // Calculate ball speed based on level
+    // Very gradual speed increase
+    let calculatedSpeed = baseBallSpeed + (level - 1) * ballSpeedIncrement;
     
-    // Very easy for first 15 scores
-    if (score < 15) {
-        calculatedSpeed = baseBallSpeed;
-    } 
-    // Medium difficulty at level 20
-    else if (score < 20) {
-        calculatedSpeed = baseBallSpeed + (score - 15) * 0.1;
-    }
-    // Progressive difficulty after score 20
-    else {
-        calculatedSpeed = baseBallSpeed + 0.5 + (score - 20) * ballSpeedIncrement;
-    }
+    // Add small random variation
+    calculatedSpeed += Math.random() * 0.1;
+    
+    // Ensure speed doesn't exceed maximum
+    calculatedSpeed = Math.min(calculatedSpeed, 2);
     
     // Add to balls array
     balls.push({
         element: ball,
         position: position,
         top: 0,
-        speed: calculatedSpeed + Math.random() * 0.3,
+        speed: calculatedSpeed,
         width: 30, // Ball width in pixels
         height: 40 // Ball height in pixels
     });
@@ -237,6 +232,14 @@ function update(timestamp) {
     const deltaTime = timestamp - lastTime;
     lastTime = timestamp;
     
+    // Check for level up based on score
+    let newLevel = Math.floor(score / 20) + 1;
+    if (newLevel > level) {
+        level = newLevel;
+        // Display level up message
+        showLevelUpMessage(level);
+    }
+    
     // Reset combo if too much time has passed since last catch
     if (timestamp - lastCatchTime > 3000 && consecutiveCatches > 0) {
         consecutiveCatches = 0;
@@ -252,24 +255,8 @@ function update(timestamp) {
         movePlayer('right');
     }
     
-    // Spawn new balls based on score
-    let currentSpawnRate = spawnRate;
-    
-    // Very easy for first 15 scores - balls come less frequently
-    if (score < 15) {
-        currentSpawnRate = spawnRate - score * 50; // Gradually decrease from 3000ms
-    } 
-    // Medium at level 20
-    else if (score < 20) {
-        currentSpawnRate = spawnRate - 15 * 50 - (score - 15) * 100;
-    }
-    // Hard after score 20
-    else {
-        currentSpawnRate = spawnRate - 15 * 50 - 5 * 100 - (score - 20) * 50;
-    }
-    
-    // Ensure minimum spawn rate
-    currentSpawnRate = Math.max(spawnRateMin, currentSpawnRate);
+    // Spawn new balls based on level
+    let currentSpawnRate = Math.max(spawnRateMin, spawnRate - (level - 1) * 200);
     
     if (timestamp - lastSpawnTime > currentSpawnRate) {
         createBall();
@@ -292,33 +279,32 @@ function update(timestamp) {
         // Player position in pixels
         const playerLeft = (playerPosition / 100) * gameWidth - playerWidth / 2;
         const playerRight = playerLeft + playerWidth;
-        const playerTop = gameHeight - 70; // Bowl top position
+        const playerTop = gameHeight - 70; // Line top position
         
-        // Improved collision detection with the bowl
+        // Improved collision detection with the line
         const isCollisionX = ballCenter > playerLeft && ballCenter < playerRight;
-        const isCollisionY = ballBottom > playerTop && ball.top < playerTop + 20;
+        const isCollisionY = ballBottom > playerTop && ballBottom < playerTop + 15;
         
         if (isCollisionX && isCollisionY) {
-            // Calculate points based on speed and combo
-            // Faster catches = more points
+            // Calculate points based on speed
             const catchSpeed = timestamp - lastCatchTime;
             let speedBonus = 1;
             
             // If catching quickly (less than 1 second between catches)
             if (lastCatchTime > 0 && catchSpeed < 1000) {
-                // Enhanced speed bonus calculation - higher points for faster catches
-                speedBonus = Math.max(2, Math.floor(1500 / catchSpeed));
+                // Enhanced speed bonus calculation
+                speedBonus = Math.max(2, Math.floor(1000 / catchSpeed));
                 consecutiveCatches++;
-                // Increase multiplier for consecutive quick catches - faster progression
-                scoreMultiplier = Math.min(10, 1 + Math.floor(consecutiveCatches / 2));
+                // Increase multiplier for consecutive quick catches
+                scoreMultiplier = Math.min(5, 1 + Math.floor(consecutiveCatches / 3));
             } else {
-                // Reset combo if too slow, but keep minimum multiplier of 2
+                // Reset combo if too slow
                 consecutiveCatches = 1;
-                scoreMultiplier = 2;
+                scoreMultiplier = 1;
             }
             
-            // Calculate final points - increased base points for all catches
-            const points = speedBonus * scoreMultiplier;
+            // Calculate final points
+            const points = speedBonus;
             
             // Update score
             score += points;
@@ -348,7 +334,7 @@ function update(timestamp) {
             // Update score popup to show actual points
             showScoreIncrease(ballCenter, playerTop - 20, points);
             
-            // Apply the bounce animation to the bowl for better feedback
+            // Apply the catch animation to the line
             player.style.animation = 'catchBounce 0.3s ease-out';
             
             // Remove animation after it completes
@@ -356,16 +342,15 @@ function update(timestamp) {
                 player.style.animation = '';
             }, 300);
             
+            // Update combo display
+            updateComboDisplay();
+            
             // Remove the ball
             gameArea.removeChild(ball.element);
             balls.splice(i, 1);
             
             // Play catch sound
             playSound('catch');
-            
-            // Update combo display
-            updateComboDisplay();
-            
             continue;
         }
         
@@ -419,11 +404,30 @@ function gameOver() {
     gameOverScreen.classList.remove('hidden');
 }
 
+// Show level up message
+function showLevelUpMessage(level) {
+    const levelUpMsg = document.createElement('div');
+    levelUpMsg.classList.add('level-up-message');
+    levelUpMsg.textContent = `Level ${level}!`;
+    
+    gameArea.appendChild(levelUpMsg);
+    
+    setTimeout(() => {
+        levelUpMsg.classList.add('fade-out');
+        setTimeout(() => {
+            if (gameArea.contains(levelUpMsg)) {
+                gameArea.removeChild(levelUpMsg);
+            }
+        }, 1000);
+    }, 2000);
+}
+
 // Restart the game
 function restartGame() {
     // Reset game variables
     score = 0;
     lives = 10;
+    level = 1;
     gameRunning = true;
     playerPosition = 50;
     consecutiveCatches = 0;

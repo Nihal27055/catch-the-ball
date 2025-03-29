@@ -1,6 +1,6 @@
 # Catch the Ball Game
 
-A fun and interactive game where players need to catch falling balls before they hit the bottom of the screen.
+A fun and interactive game where players need to catch falling balloons before they hit the bottom of the screen.
 
 ## Play the Game
 
@@ -10,15 +10,16 @@ A fun and interactive game where players need to catch falling balls before they
 - Beautiful graphics with a river, forest, and sky background
 - Responsive design - playable on both PC and mobile devices
 - Touch controls for mobile devices, keyboard controls for PC
-- Combo scoring system - catch balloons quickly to earn more points
+- Progressive level system with gradually increasing difficulty
+- Quick-catch scoring system - catch balloons quickly to earn more points
 - Lives system
 - Persistent high score tracking (saved between sessions)
 
 ## How to Play
-- On PC: Use left and right arrow keys to move the catcher
+- On PC: Use left and right arrow keys to move the line
 - On mobile: Touch the left or right side of the screen to move
-- Catch the falling balloons to increase your score
-- Catch balloons in quick succession to earn bonus points and multipliers
+- Catch the falling balloons with your line to increase your score
+- Catch balloons quickly to earn bonus points
 - Don't let the balloons touch the red line at the bottom, or you'll lose a life
 - Game ends when all lives are lost
 - Try to beat your high score with each playthrough
@@ -26,8 +27,8 @@ A fun and interactive game where players need to catch falling balls before they
 ### Scoring System
 - Basic catch: 1 point
 - Quick catches (less than 1 second apart): Up to 5 points based on speed
-- Consecutive quick catches build a combo multiplier (up to 5x)
-- Waiting too long between catches resets your combo
+- Every 20 points progresses you to the next level
+- Higher levels bring slightly increased challenge
 
 ## Technologies
 - HTML5
