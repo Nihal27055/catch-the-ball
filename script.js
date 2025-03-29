@@ -13,6 +13,9 @@ const comboDisplay = document.getElementById('combo-display');
 const comboCountElement = document.getElementById('combo-count');
 const instructionsScreen = document.getElementById('instructions-screen');
 const startGameBtn = document.getElementById('start-game-btn');
+const instructionsToggle = document.getElementById('instructions-toggle');
+const sideInstructions = document.getElementById('side-instructions');
+const closeSideInstructions = document.getElementById('close-side-instructions');
 
 // Sound effects
 const catchSound = new Audio('sounds/catch.mp3');
@@ -70,6 +73,10 @@ function init() {
     // Add start game button event listener
     startGameBtn.addEventListener('click', startGame);
     
+    // Add side instructions toggle event listeners
+    instructionsToggle.addEventListener('click', toggleSideInstructions);
+    closeSideInstructions.addEventListener('click', closeSideInstructionsPanel);
+    
     // Handle window resize
     window.addEventListener('resize', updateDimensions);
     
@@ -88,6 +95,13 @@ function init() {
     catchSound.load();
     missSound.load();
     levelUpSound.load();
+    
+    // Add keyboard shortcut for instructions (press 'I' key)
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'i' || e.key === 'I') {
+            toggleSideInstructions();
+        }
+    });
 }
 
 // Update game dimensions
@@ -500,6 +514,16 @@ function startGame() {
     instructionsScreen.classList.add('hidden');
     gameRunning = true;
     gameLoop = requestAnimationFrame(update);
+}
+
+// Toggle side instructions panel
+function toggleSideInstructions() {
+    sideInstructions.classList.toggle('show');
+}
+
+// Close the side instructions panel
+function closeSideInstructionsPanel() {
+    sideInstructions.classList.remove('show');
 }
 
 // Start the game when the page loads

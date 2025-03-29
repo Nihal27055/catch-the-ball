@@ -7,6 +7,43 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Instructions Button (fixed on the side) -->
+    <div id="instructions-toggle" class="instructions-toggle">
+        <span>?</span>
+    </div>
+    
+    <!-- Side Instructions Panel -->
+    <div id="side-instructions" class="side-instructions">
+        <div class="side-instructions-content">
+            <h3>How to Play</h3>
+            <div class="instruction-item">
+                <div class="instruction-icon">⌨️</div>
+                <p>Use left/right arrow keys to move</p>
+            </div>
+            <div class="instruction-item">
+                <div class="instruction-icon">👆</div>
+                <p>Touch buttons to move on mobile</p>
+            </div>
+            <div class="instruction-item">
+                <div class="instruction-icon">🎯</div>
+                <p>Catch balloons with your line</p>
+            </div>
+            <div class="instruction-item">
+                <div class="instruction-icon">⚡</div>
+                <p>Catch quickly for bonus points</p>
+            </div>
+            <div class="instruction-item">
+                <div class="instruction-icon">⚠️</div>
+                <p>Don't let balloons touch red line</p>
+            </div>
+            <div class="instruction-item">
+                <div class="instruction-icon">🔢</div>
+                <p>You have 20 lives</p>
+            </div>
+            <button id="close-side-instructions" class="close-btn">×</button>
+        </div>
+    </div>
+    
     <div class="game-container">
         <div class="game-info">
             <div class="score">Score: <span id="score">0</span></div>
