@@ -52,4 +52,4 @@ The game includes sound effects that enhance the playing experience:
 4. Enjoy the game!
 
 ## License
-MIT 
+MIT
