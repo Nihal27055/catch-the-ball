@@ -31,7 +31,7 @@ let playerPosition = 50; // percentage from left
 let playerWidth = 80; // in pixels
 let playerSpeed = 10; // percentage per move (increased from 5 for smoother movement)
 let baseBallSpeed = 0.5; // base pixels per frame (reduced for easier gameplay)
-let ballSpeedIncrement = 0.02; // very small increment for gradual difficulty
+let ballSpeedIncrement = 0.05; // increased from 0.02 for more noticeable level difficulty
 let spawnRate = 3000; // milliseconds (increased for easier start)
 let spawnRateMin = 1000;
 let lastSpawnTime = 0;
@@ -172,14 +172,14 @@ function createBall() {
     gameArea.appendChild(ball);
     
     // Calculate ball speed based on level
-    // Very gradual speed increase
+    // More noticeable speed increase per level
     let calculatedSpeed = baseBallSpeed + (level - 1) * ballSpeedIncrement;
     
     // Add small random variation
     calculatedSpeed += Math.random() * 0.1;
     
     // Ensure speed doesn't exceed maximum
-    calculatedSpeed = Math.min(calculatedSpeed, 2);
+    calculatedSpeed = Math.min(calculatedSpeed, 3); // Increased max speed from 2 to 3
     
     // Add to balls array
     balls.push({
@@ -284,8 +284,8 @@ function update(timestamp) {
         movePlayer('right');
     }
     
-    // Spawn new balls based on level
-    let currentSpawnRate = Math.max(spawnRateMin, spawnRate - (level - 1) * 200);
+    // Spawn new balls based on level - more aggressive spawn rate reduction
+    let currentSpawnRate = Math.max(spawnRateMin, spawnRate - (level - 1) * 300);
     
     if (timestamp - lastSpawnTime > currentSpawnRate) {
         createBall();
@@ -450,7 +450,7 @@ function gameOver() {
 function showLevelUpMessage(level) {
     const levelUpMsg = document.createElement('div');
     levelUpMsg.classList.add('level-up-message');
-    levelUpMsg.textContent = `Level ${level}!`;
+    levelUpMsg.innerHTML = `Level ${level}!<br><span style="font-size: 24px;">Speed Increased!</span>`;
     
     gameArea.appendChild(levelUpMsg);
     
