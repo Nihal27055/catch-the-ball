@@ -8,10 +8,12 @@ const rightControl = document.getElementById('right-control');
 const gameOverScreen = document.getElementById('game-over');
 const finalScoreElement = document.getElementById('final-score');
 const restartBtn = document.getElementById('restart-btn');
+const highScoreElement = document.getElementById('high-score');
 
 // Game variables
 let score = 0;
 let lives = 10;
+let highScore = localStorage.getItem('catchBallHighScore') || 0;
 let gameRunning = true;
 let playerPosition = 50; // percentage from left
 let playerWidth = 80; // in pixels
@@ -26,6 +28,9 @@ let balls = [];
 let keysPressed = {};
 let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 let lastTime = 0;
+let scoreMultiplier = 1; // Base score multiplier
+let consecutiveCatches = 0; // Track consecutive catches for combo scoring
+let lastCatchTime = 0; // Track timing between catches
 
 // Game area dimensions
 let gameWidth;
@@ -34,6 +39,10 @@ let gameHeight;
 // Initialize the game
 function init() {
     updateDimensions();
+    
+    // Update high score display from localStorage
+    highScore = localStorage.getItem('catchBallHighScore') || 0;
+    highScoreElement.textContent = highScore;
     
     // Add event listeners for PC controls
     document.addEventListener('keydown', handleKeyDown);
@@ -171,18 +180,31 @@ function createCatchEffect(x, y, color) {
 }
 
 // Show score increase animation
-function showScoreIncrease(x, y) {
+function showScoreIncrease(x, y, points) {
     const scorePopup = document.createElement('div');
     scorePopup.classList.add('score-popup');
-    scorePopup.textContent = '+1';
+    scorePopup.textContent = `+${points}`;
     scorePopup.style.left = `${x}px`;
     scorePopup.style.top = `${y}px`;
+    
+    // Add data attribute for CSS styling based on point value
+    if (points >= 5) {
+        scorePopup.setAttribute('data-value', '5');
+    } else if (points >= 4) {
+        scorePopup.setAttribute('data-value', '4');
+    } else if (points >= 3) {
+        scorePopup.setAttribute('data-value', '3');
+    } else if (points >= 2) {
+        scorePopup.setAttribute('data-value', '2');
+    }
     
     gameArea.appendChild(scorePopup);
     
     // Remove the popup after animation completes
     setTimeout(() => {
-        gameArea.removeChild(scorePopup);
+        if (gameArea.contains(scorePopup)) {
+            gameArea.removeChild(scorePopup);
+        }
     }, 1000);
 }
 
@@ -193,6 +215,12 @@ function update(timestamp) {
     // Calculate delta time for smoother movement
     const deltaTime = timestamp - lastTime;
     lastTime = timestamp;
+    
+    // Reset combo if too much time has passed since last catch
+    if (timestamp - lastCatchTime > 3000 && consecutiveCatches > 0) {
+        consecutiveCatches = 0;
+        scoreMultiplier = 1;
+    }
     
     // Handle keyboard movement with smoother movement
     if (keysPressed['ArrowLeft'] || keysPressed['a']) {
@@ -249,9 +277,39 @@ function update(timestamp) {
         const isCollisionY = ballBottom > playerTop && ball.top < playerTop + 20;
         
         if (isCollisionX && isCollisionY) {
-            // Caught the balloon
-            score++;
+            // Calculate points based on speed and combo
+            // Faster catches = more points
+            const catchSpeed = timestamp - lastCatchTime;
+            let speedBonus = 1;
+            
+            // If catching quickly (less than 1 second between catches)
+            if (lastCatchTime > 0 && catchSpeed < 1000) {
+                speedBonus = Math.max(1, Math.floor(1000 / catchSpeed));
+                consecutiveCatches++;
+                // Increase multiplier for consecutive quick catches
+                scoreMultiplier = Math.min(5, 1 + Math.floor(consecutiveCatches / 3));
+            } else {
+                // Reset combo if too slow
+                consecutiveCatches = 1;
+                scoreMultiplier = 1;
+            }
+            
+            // Calculate final points
+            const points = speedBonus * scoreMultiplier;
+            
+            // Update score
+            score += points;
             scoreElement.textContent = score;
+            
+            // Update high score if needed
+            if (score > highScore) {
+                highScore = score;
+                highScoreElement.textContent = highScore;
+                localStorage.setItem('catchBallHighScore', highScore);
+            }
+            
+            // Update last catch time for combo calculation
+            lastCatchTime = timestamp;
             
             // Get balloon color for the effect
             let ballColor = '#ff0000'; // default red
@@ -263,7 +321,9 @@ function update(timestamp) {
             
             // Create visual effects
             createCatchEffect(ballCenter, playerTop, ballColor);
-            showScoreIncrease(ballCenter, playerTop - 20);
+            
+            // Update score popup to show actual points
+            showScoreIncrease(ballCenter, playerTop - 20, points);
             
             // Briefly scale the bowl to give feedback
             player.style.transform = 'translateX(-50%) scale(1.1)';
@@ -315,6 +375,18 @@ function playSound(type) {
 function gameOver() {
     gameRunning = false;
     finalScoreElement.textContent = score;
+    
+    // Show new high score message if applicable
+    const highScoreMessage = document.getElementById('high-score-message');
+    if (score > highScore && highScoreMessage) {
+        highScoreMessage.classList.remove('hidden');
+        // Update the stored high score
+        localStorage.setItem('catchBallHighScore', score);
+        highScore = score;
+    } else if (highScoreMessage) {
+        highScoreMessage.classList.add('hidden');
+    }
+    
     gameOverScreen.classList.remove('hidden');
 }
 
