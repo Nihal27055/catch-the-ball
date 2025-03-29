@@ -9,6 +9,8 @@ const gameOverScreen = document.getElementById('game-over');
 const finalScoreElement = document.getElementById('final-score');
 const restartBtn = document.getElementById('restart-btn');
 const highScoreElement = document.getElementById('high-score');
+const comboDisplay = document.getElementById('combo-display');
+const comboCountElement = document.getElementById('combo-count');
 
 // Game variables
 let score = 0;
@@ -67,6 +69,9 @@ function init() {
     if (isMobile) {
         document.addEventListener('touchmove', handleTouchMove, { passive: false });
     }
+    
+    // Hide combo display initially
+    comboDisplay.classList.add('hidden');
 }
 
 // Update game dimensions
@@ -208,6 +213,22 @@ function showScoreIncrease(x, y, points) {
     }, 1000);
 }
 
+// Update combo display
+function updateComboDisplay() {
+    if (scoreMultiplier > 1) {
+        comboCountElement.textContent = scoreMultiplier;
+        comboDisplay.classList.remove('hidden');
+        
+        // Hide the combo display after 3 seconds if no new catches
+        clearTimeout(window.comboTimeout);
+        window.comboTimeout = setTimeout(() => {
+            comboDisplay.classList.add('hidden');
+        }, 3000);
+    } else {
+        comboDisplay.classList.add('hidden');
+    }
+}
+
 // Update game state
 function update(timestamp) {
     if (!gameRunning) return;
@@ -220,6 +241,7 @@ function update(timestamp) {
     if (timestamp - lastCatchTime > 3000 && consecutiveCatches > 0) {
         consecutiveCatches = 0;
         scoreMultiplier = 1;
+        updateComboDisplay();
     }
     
     // Handle keyboard movement with smoother movement
@@ -284,17 +306,18 @@ function update(timestamp) {
             
             // If catching quickly (less than 1 second between catches)
             if (lastCatchTime > 0 && catchSpeed < 1000) {
-                speedBonus = Math.max(1, Math.floor(1000 / catchSpeed));
+                // Enhanced speed bonus calculation - higher points for faster catches
+                speedBonus = Math.max(2, Math.floor(1500 / catchSpeed));
                 consecutiveCatches++;
-                // Increase multiplier for consecutive quick catches
-                scoreMultiplier = Math.min(5, 1 + Math.floor(consecutiveCatches / 3));
+                // Increase multiplier for consecutive quick catches - faster progression
+                scoreMultiplier = Math.min(10, 1 + Math.floor(consecutiveCatches / 2));
             } else {
-                // Reset combo if too slow
+                // Reset combo if too slow, but keep minimum multiplier of 2
                 consecutiveCatches = 1;
-                scoreMultiplier = 1;
+                scoreMultiplier = 2;
             }
             
-            // Calculate final points
+            // Calculate final points - increased base points for all catches
             const points = speedBonus * scoreMultiplier;
             
             // Update score
@@ -325,11 +348,13 @@ function update(timestamp) {
             // Update score popup to show actual points
             showScoreIncrease(ballCenter, playerTop - 20, points);
             
-            // Briefly scale the bowl to give feedback
-            player.style.transform = 'translateX(-50%) scale(1.1)';
+            // Apply the bounce animation to the bowl for better feedback
+            player.style.animation = 'catchBounce 0.3s ease-out';
+            
+            // Remove animation after it completes
             setTimeout(() => {
-                player.style.transform = 'translateX(-50%) scale(1)';
-            }, 100);
+                player.style.animation = '';
+            }, 300);
             
             // Remove the ball
             gameArea.removeChild(ball.element);
@@ -337,6 +362,10 @@ function update(timestamp) {
             
             // Play catch sound
             playSound('catch');
+            
+            // Update combo display
+            updateComboDisplay();
+            
             continue;
         }
         
@@ -397,6 +426,11 @@ function restartGame() {
     lives = 10;
     gameRunning = true;
     playerPosition = 50;
+    consecutiveCatches = 0;
+    scoreMultiplier = 1;
+    
+    // Hide combo display
+    comboDisplay.classList.add('hidden');
     
     // Update display
     scoreElement.textContent = score;
