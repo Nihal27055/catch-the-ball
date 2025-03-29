@@ -5,24 +5,127 @@
 }
 
 body {
-    font-family: 'Arial', sans-serif;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    min-height: 100vh;
-    background-color: #f0f0f0;
+    margin: 0;
+    padding: 0;
+    font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+    background-color: #f0f8ff;
     overflow: hidden;
 }
 
 .game-container {
     position: relative;
-    width: 100%;
-    max-width: 500px;
+    width: 100vw;
     height: 100vh;
-    max-height: 800px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
     overflow: hidden;
-    border-radius: 10px;
-    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
+}
+
+.game-area {
+    position: relative;
+    width: 100%;
+    max-width: 800px;
+    height: 80vh;
+    background: linear-gradient(
+        180deg, 
+        #87CEEB 0%, 
+        #87CEEB 60%, 
+        #228B22 100%
+    );
+    overflow: hidden;
+    border-radius: 12px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    border: 3px solid #456545;
+    /* Add nature background with river and forest */
+    background-image: url('https://images.unsplash.com/photo-1580137189272-c9379f8864fd?w=800&q=80'), url('https://images.unsplash.com/photo-1541675154750-0444337c0b67?w=800&q=80');
+    background-position: bottom center, top center;
+    background-size: 100% 40%, 100% 70%;
+    background-repeat: no-repeat;
+}
+
+/* Trees and forest elements */
+.game-area::before {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        url('https://www.transparentpng.com/thumb/bird/colorful-birds-png-transparent-image-14.png'),
+        url('https://www.transparentpng.com/thumb/bird/colorful-birds-png-transparent-image-9.png'),
+        url('https://www.transparentpng.com/thumb/bird/colorful-birds-png-transparent-image-5.png'),
+        url('https://www.transparentpng.com/thumb/tree/tree-png-images-best-picture-7.png'),
+        url('https://www.transparentpng.com/thumb/tree/pine-tree-png-14.png'),
+        url('https://www.transparentpng.com/thumb/tree/tree-png-transparent-picture-2.png');
+    background-size: 50px, 40px, 30px, 180px, 120px, 150px;
+    background-repeat: no-repeat;
+    background-position: 
+        calc(20% + var(--bird-pos-1, 0px)) 15%,
+        calc(70% + var(--bird-pos-2, 0px)) 25%,
+        calc(40% + var(--bird-pos-3, 0px)) 20%,
+        5% 80%,  /* Left tree */
+        85% 70%, /* Right tree */
+        50% 75%; /* Middle tree */
+    z-index: 1;
+    animation: birdFly 15s infinite linear;
+    pointer-events: none;
+}
+
+/* River flow animation */
+.game-area::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 15%;
+    background: linear-gradient(90deg, 
+        rgba(0, 119, 190, 0.3) 0%,
+        rgba(0, 119, 190, 0.5) 25%, 
+        rgba(0, 119, 190, 0.3) 50%, 
+        rgba(0, 119, 190, 0.5) 75%, 
+        rgba(0, 119, 190, 0.3) 100%);
+    background-size: 200% 100%;
+    animation: riverFlow 8s infinite linear;
+    z-index: 1;
+    pointer-events: none;
+}
+
+@keyframes birdFly {
+    0% {
+        --bird-pos-1: 0px;
+        --bird-pos-2: 0px;
+        --bird-pos-3: 0px;
+    }
+    25% {
+        --bird-pos-1: 30px;
+        --bird-pos-2: -40px;
+        --bird-pos-3: 20px;
+    }
+    50% {
+        --bird-pos-1: 0px;
+        --bird-pos-2: 0px;
+        --bird-pos-3: -30px;
+    }
+    75% {
+        --bird-pos-1: -30px;
+        --bird-pos-2: 40px;
+        --bird-pos-3: 10px;
+    }
+    100% {
+        --bird-pos-1: 0px;
+        --bird-pos-2: 0px;
+        --bird-pos-3: 0px;
+    }
+}
+
+@keyframes riverFlow {
+    0% {
+        background-position: 0% 0%;
+    }
+    100% {
+        background-position: 200% 0%;
+    }
 }
 
 .game-info {
@@ -62,22 +165,6 @@ body {
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
-}
-
-#game-area {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(
-        to bottom,
-        #87CEEB 0%, /* Sky */
-        #87CEEB 50%,
-        #228B22 50%, /* Forest */
-        #228B22 80%,
-        #1E90FF 80%, /* River */
-        #1E90FF 100%
-    );
-    overflow: hidden;
 }
 
 /* Enhanced forest details with multiple layers */
@@ -237,18 +324,77 @@ body {
     z-index: 2;
 }
 
-#player {
+/* Enhanced balloon styling to match the nature theme */
+.balloon {
     position: absolute;
-    bottom: 70px;
+    width: 35px;
+    height: 45px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    animation: float 2s infinite ease-in-out;
+    z-index: 3;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+}
+
+.balloon::after {
+    content: '';
+    position: absolute;
+    bottom: -7px;
     left: 50%;
     transform: translateX(-50%);
-    width: 80px;
+    width: 2px;
     height: 10px;
-    background: linear-gradient(to right, #888888, #ffffff, #888888);
-    border-radius: 5px;
+    background-color: #444;
+    z-index: 2;
+}
+
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(2deg); }
+    50% { transform: translateY(-5px) rotate(-2deg); }
+}
+
+/* Balloon colors */
+.balloon.red {
+    background: radial-gradient(circle at 30% 30%, #ff5555, #cc0000);
+    border: 1px solid #800000;
+}
+
+.balloon.blue {
+    background: radial-gradient(circle at 30% 30%, #5599ff, #0044cc);
+    border: 1px solid #002266;
+}
+
+.balloon.green {
+    background: radial-gradient(circle at 30% 30%, #66dd66, #00aa00);
+    border: 1px solid #004400;
+}
+
+.balloon.yellow {
+    background: radial-gradient(circle at 30% 30%, #ffdd55, #ffaa00);
+    border: 1px solid #664400;
+}
+
+.balloon.purple {
+    background: radial-gradient(circle at 30% 30%, #cc77ff, #7700cc);
+    border: 1px solid #330066;
+}
+
+.balloon.orange {
+    background: radial-gradient(circle at 30% 30%, #ffaa77, #ff6600);
+    border: 1px solid #802b00;
+}
+
+/* Enhanced player styling (blue line) */
+.player {
+    position: absolute;
+    width: 80px;
+    height: 8px;
+    background: linear-gradient(to right, #00a8ff, #0055ff, #00a8ff);
+    border-radius: 4px;
+    bottom: 60px;
+    left: 50%;
+    transform: translateX(-50%);
     z-index: 5;
-    transition: left 0.1s ease, transform 0.3s ease;
-    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    box-shadow: 0 0 10px #0099ff, 0 0 20px rgba(0, 153, 255, 0.5);
 }
 
 /* Remove bowl decoration elements */
@@ -264,52 +410,6 @@ body {
     0% { transform: translateX(-50%) scaleX(1); }
     50% { transform: translateX(-50%) scaleX(1.2); }
     100% { transform: translateX(-50%) scaleX(1); }
-}
-
-.balloon {
-    position: absolute;
-    width: 30px;
-    height: 40px;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    z-index: 3;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Balloon string */
-.balloon::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 2px;
-    height: 10px;
-    background-color: #555;
-}
-
-/* Balloon colors */
-.balloon.red {
-    background: radial-gradient(circle at 35% 25%, #ff9999, #ff0000);
-}
-
-.balloon.blue {
-    background: radial-gradient(circle at 35% 25%, #99ccff, #0066ff);
-}
-
-.balloon.green {
-    background: radial-gradient(circle at 35% 25%, #99ff99, #00cc00);
-}
-
-.balloon.yellow {
-    background: radial-gradient(circle at 35% 25%, #ffffcc, #ffcc00);
-}
-
-.balloon.purple {
-    background: radial-gradient(circle at 35% 25%, #cc99ff, #9900cc);
-}
-
-.balloon.orange {
-    background: radial-gradient(circle at 35% 25%, #ffcc99, #ff6600);
 }
 
 .red-line {
@@ -735,4 +835,207 @@ body {
 
 .close-btn:hover {
     background-color: #ff0000;
+}
+
+.score-display {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    z-index: 10;
+    font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
+    color: #fff;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    background: rgba(0, 0, 0, 0.3);
+    padding: 10px;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.score-item {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+/* Combo display with nature theme */
+.combo-display {
+    position: absolute;
+    top: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    padding: 10px 20px;
+    border-radius: 25px;
+    color: white;
+    font-size: 18px;
+    font-weight: bold;
+    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
+    z-index: 10;
+    box-shadow: 0 0 20px rgba(46, 204, 113, 0.7);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { transform: translateX(-50%) scale(1); }
+    50% { transform: translateX(-50%) scale(1.1); }
+    100% { transform: translateX(-50%) scale(1); }
+}
+
+/* Enhanced catch effect */
+.catch-effect {
+    position: absolute;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    animation: catchEffect 0.5s ease-out forwards;
+    z-index: 5;
+    opacity: 0.8;
+    box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+}
+
+@keyframes catchEffect {
+    0% { transform: scale(0.2); opacity: 1; }
+    100% { transform: scale(2); opacity: 0; }
+}
+
+/* Score popup with nature theme */
+.score-popup {
+    position: absolute;
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
+    animation: scorePopup 1s ease-out forwards;
+    z-index: 10;
+}
+
+.score-popup[data-value="5"] {
+    color: gold;
+    font-size: 32px;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+}
+
+.score-popup[data-value="4"] {
+    color: #ff9500;
+    font-size: 28px;
+}
+
+.score-popup[data-value="3"] {
+    color: #00e676;
+    font-size: 26px;
+}
+
+.score-popup[data-value="2"] {
+    color: #40c4ff;
+}
+
+@keyframes scorePopup {
+    0% { transform: translateY(0) scale(0.8); opacity: 0; }
+    20% { transform: translateY(-15px) scale(1.2); opacity: 1; }
+    80% { transform: translateY(-30px) scale(1); opacity: 1; }
+    100% { transform: translateY(-45px) scale(0.8); opacity: 0; }
+}
+
+/* Level up message with nature theme */
+.level-up-message {
+    position: absolute;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 48px;
+    font-weight: bold;
+    color: #ffeb3b;
+    text-shadow: 
+        0 0 15px rgba(255, 235, 59, 0.8),
+        0 0 30px rgba(255, 235, 59, 0.5),
+        0 2px 5px rgba(0, 0, 0, 0.5);
+    text-align: center;
+    z-index: 100;
+    animation: levelUpPulse 2s ease-in-out;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 20px 40px;
+    border-radius: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    backdrop-filter: blur(5px);
+}
+
+@keyframes levelUpPulse {
+    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+    20% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+    70% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+}
+
+/* Game over screen with forest theme */
+.game-over {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 50;
+    color: white;
+    text-align: center;
+    backdrop-filter: blur(8px);
+    border: 3px solid rgba(46, 204, 113, 0.5);
+    border-radius: 12px;
+}
+
+.game-over h2 {
+    font-size: 48px;
+    margin-bottom: 20px;
+    color: #ff5252;
+    text-shadow: 0 0 10px rgba(255, 82, 82, 0.7);
+}
+
+.game-over p {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.restart-btn {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    padding: 15px 40px;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
+    transition: all 0.3s ease;
+    margin-top: 20px;
+}
+
+.restart-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(46, 204, 113, 0.6);
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+}
+
+.restart-btn:active {
+    transform: translateY(1px);
+}
+
+.high-score-message {
+    font-size: 28px;
+    font-weight: bold;
+    color: gold;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
+    animation: glow 1.5s infinite alternate;
+    margin: 10px 0 20px;
+}
+
+@keyframes glow {
+    from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
+    to { text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 215, 0, 0.5); }
 } 
