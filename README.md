@@ -4,7 +4,7 @@ A fun and interactive game where players need to catch falling balloons before t
 
 ## Play the Game
 
-[Play Catch the Ball Game online](https://nihal27055.github.io/catch-the-ball/)
+[Play Catch the Ball Game online]( https://nihal27055.github.io/catch-the-ball/)
 
 ## Features
 - Beautiful graphics with a river, forest, and sky background
