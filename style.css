@@ -7,125 +7,71 @@
 body {
     margin: 0;
     padding: 0;
-    font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
-    background-color: #f0f8ff;
-    overflow: hidden;
-}
-
-.game-container {
-    position: relative;
-    width: 100vw;
+    font-family: 'Comic Sans MS', cursive, sans-serif;
     height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
     overflow: hidden;
-}
-
-.game-area {
+    background: linear-gradient(to bottom, #87CEEB, #4682B4);
     position: relative;
-    width: 100%;
-    max-width: 800px;
-    height: 80vh;
-    background: linear-gradient(
-        180deg, 
-        #87CEEB 0%, 
-        #87CEEB 60%, 
-        #228B22 100%
-    );
-    overflow: hidden;
-    border-radius: 12px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    border: 3px solid #456545;
-    /* Add nature background with river and forest */
-    background-image: url('https://images.unsplash.com/photo-1580137189272-c9379f8864fd?w=800&q=80'), url('https://images.unsplash.com/photo-1541675154750-0444337c0b67?w=800&q=80');
-    background-position: bottom center, top center;
-    background-size: 100% 40%, 100% 70%;
-    background-repeat: no-repeat;
 }
 
-/* Trees and forest elements */
-.game-area::before {
-    content: '';
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    background-image: 
-        url('https://www.transparentpng.com/thumb/bird/colorful-birds-png-transparent-image-14.png'),
-        url('https://www.transparentpng.com/thumb/bird/colorful-birds-png-transparent-image-9.png'),
-        url('https://www.transparentpng.com/thumb/bird/colorful-birds-png-transparent-image-5.png'),
-        url('https://www.transparentpng.com/thumb/tree/tree-png-images-best-picture-7.png'),
-        url('https://www.transparentpng.com/thumb/tree/pine-tree-png-14.png'),
-        url('https://www.transparentpng.com/thumb/tree/tree-png-transparent-picture-2.png');
-    background-size: 50px, 40px, 30px, 180px, 120px, 150px;
-    background-repeat: no-repeat;
-    background-position: 
-        calc(20% + var(--bird-pos-1, 0px)) 15%,
-        calc(70% + var(--bird-pos-2, 0px)) 25%,
-        calc(40% + var(--bird-pos-3, 0px)) 20%,
-        5% 80%,  /* Left tree */
-        85% 70%, /* Right tree */
-        50% 75%; /* Middle tree */
-    z-index: 1;
-    animation: birdFly 15s infinite linear;
-    pointer-events: none;
-}
-
-/* River flow animation */
-.game-area::after {
+/* Animated River */
+body::before {
     content: '';
     position: absolute;
     bottom: 0;
     left: 0;
-    width: 100%;
+    right: 0;
     height: 15%;
-    background: linear-gradient(90deg, 
-        rgba(0, 119, 190, 0.3) 0%,
-        rgba(0, 119, 190, 0.5) 25%, 
-        rgba(0, 119, 190, 0.3) 50%, 
-        rgba(0, 119, 190, 0.5) 75%, 
-        rgba(0, 119, 190, 0.3) 100%);
-    background-size: 200% 100%;
-    animation: riverFlow 8s infinite linear;
-    z-index: 1;
-    pointer-events: none;
+    background: linear-gradient(to bottom, rgba(0, 100, 255, 0.5), rgba(0, 50, 200, 0.8));
+    z-index: -1;
+    animation: river-flow 8s linear infinite;
+    border-top: 5px solid rgba(255, 255, 255, 0.4);
 }
 
-@keyframes birdFly {
+/* River animation */
+@keyframes river-flow {
     0% {
-        --bird-pos-1: 0px;
-        --bird-pos-2: 0px;
-        --bird-pos-3: 0px;
-    }
-    25% {
-        --bird-pos-1: 30px;
-        --bird-pos-2: -40px;
-        --bird-pos-3: 20px;
-    }
-    50% {
-        --bird-pos-1: 0px;
-        --bird-pos-2: 0px;
-        --bird-pos-3: -30px;
-    }
-    75% {
-        --bird-pos-1: -30px;
-        --bird-pos-2: 40px;
-        --bird-pos-3: 10px;
+        background-position: 0 0;
     }
     100% {
-        --bird-pos-1: 0px;
-        --bird-pos-2: 0px;
-        --bird-pos-3: 0px;
+        background-position: 200px 0;
     }
 }
 
-@keyframes riverFlow {
+/* Forest background */
+body::after {
+    content: '';
+    position: absolute;
+    bottom: 15%;
+    left: 0;
+    right: 0;
+    height: 30%;
+    background-image: url('https://i.imgur.com/HjW6A7I.png');
+    background-size: cover;
+    background-repeat: repeat-x;
+    z-index: -2;
+    animation: forest-parallax 30s linear infinite;
+}
+
+/* Forest parallax effect */
+@keyframes forest-parallax {
     0% {
-        background-position: 0% 0%;
+        background-position: 0 0;
     }
     100% {
-        background-position: 200% 0%;
+        background-position: -1000px 0;
     }
+}
+
+.game-container {
+    position: relative;
+    width: 100%;
+    max-width: 500px;
+    height: 100vh;
+    max-height: 800px;
+    overflow: hidden;
+    border-radius: 10px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
 }
 
 .game-info {
@@ -165,6 +111,22 @@ body {
     0% { transform: scale(1); }
     50% { transform: scale(1.1); }
     100% { transform: scale(1); }
+}
+
+#game-area {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        #87CEEB 0%, /* Sky */
+        #87CEEB 50%,
+        #228B22 50%, /* Forest */
+        #228B22 80%,
+        #1E90FF 80%, /* River */
+        #1E90FF 100%
+    );
+    overflow: hidden;
 }
 
 /* Enhanced forest details with multiple layers */
@@ -324,77 +286,18 @@ body {
     z-index: 2;
 }
 
-/* Enhanced balloon styling to match the nature theme */
-.balloon {
+#player {
     position: absolute;
-    width: 35px;
-    height: 45px;
-    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
-    animation: float 2s infinite ease-in-out;
-    z-index: 3;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-}
-
-.balloon::after {
-    content: '';
-    position: absolute;
-    bottom: -7px;
+    bottom: 70px;
     left: 50%;
     transform: translateX(-50%);
-    width: 2px;
-    height: 10px;
-    background-color: #444;
-    z-index: 2;
-}
-
-@keyframes float {
-    0%, 100% { transform: translateY(0) rotate(2deg); }
-    50% { transform: translateY(-5px) rotate(-2deg); }
-}
-
-/* Balloon colors */
-.balloon.red {
-    background: radial-gradient(circle at 30% 30%, #ff5555, #cc0000);
-    border: 1px solid #800000;
-}
-
-.balloon.blue {
-    background: radial-gradient(circle at 30% 30%, #5599ff, #0044cc);
-    border: 1px solid #002266;
-}
-
-.balloon.green {
-    background: radial-gradient(circle at 30% 30%, #66dd66, #00aa00);
-    border: 1px solid #004400;
-}
-
-.balloon.yellow {
-    background: radial-gradient(circle at 30% 30%, #ffdd55, #ffaa00);
-    border: 1px solid #664400;
-}
-
-.balloon.purple {
-    background: radial-gradient(circle at 30% 30%, #cc77ff, #7700cc);
-    border: 1px solid #330066;
-}
-
-.balloon.orange {
-    background: radial-gradient(circle at 30% 30%, #ffaa77, #ff6600);
-    border: 1px solid #802b00;
-}
-
-/* Enhanced player styling (blue line) */
-.player {
-    position: absolute;
     width: 80px;
-    height: 8px;
-    background: linear-gradient(to right, #00a8ff, #0055ff, #00a8ff);
-    border-radius: 4px;
-    bottom: 60px;
-    left: 50%;
-    transform: translateX(-50%);
+    height: 10px;
+    background: linear-gradient(to right, #888888, #ffffff, #888888);
+    border-radius: 5px;
     z-index: 5;
-    box-shadow: 0 0 10px #0099ff, 0 0 20px rgba(0, 153, 255, 0.5);
+    transition: left 0.1s ease, transform 0.3s ease;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
 }
 
 /* Remove bowl decoration elements */
@@ -410,6 +313,52 @@ body {
     0% { transform: translateX(-50%) scaleX(1); }
     50% { transform: translateX(-50%) scaleX(1.2); }
     100% { transform: translateX(-50%) scaleX(1); }
+}
+
+.balloon {
+    position: absolute;
+    width: 30px;
+    height: 40px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    z-index: 3;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+/* Balloon string */
+.balloon::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 10px;
+    background-color: #555;
+}
+
+/* Balloon colors */
+.balloon.red {
+    background: radial-gradient(circle at 35% 25%, #ff9999, #ff0000);
+}
+
+.balloon.blue {
+    background: radial-gradient(circle at 35% 25%, #99ccff, #0066ff);
+}
+
+.balloon.green {
+    background: radial-gradient(circle at 35% 25%, #99ff99, #00cc00);
+}
+
+.balloon.yellow {
+    background: radial-gradient(circle at 35% 25%, #ffffcc, #ffcc00);
+}
+
+.balloon.purple {
+    background: radial-gradient(circle at 35% 25%, #cc99ff, #9900cc);
+}
+
+.balloon.orange {
+    background: radial-gradient(circle at 35% 25%, #ffcc99, #ff6600);
 }
 
 .red-line {
@@ -837,52 +786,152 @@ body {
     background-color: #ff0000;
 }
 
-.score-display {
+/* Birds animation */
+.bird {
     position: absolute;
-    top: 10px;
-    left: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 5px;
-    z-index: 10;
-    font-family: 'Arial Rounded MT Bold', 'Arial', sans-serif;
-    color: #fff;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    background: rgba(0, 0, 0, 0.3);
-    padding: 10px;
-    border-radius: 10px;
-    backdrop-filter: blur(5px);
-    border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 30px;
+    height: 20px;
+    z-index: 0;
+    background-size: contain;
+    background-repeat: no-repeat;
+    animation: fly-across linear infinite;
 }
 
-.score-item {
-    font-size: 18px;
-    font-weight: bold;
+.bird1 {
+    top: 10%;
+    background-image: url('https://i.imgur.com/8BsLkRv.png');
+    animation-duration: 15s;
+    animation-delay: 0s;
 }
 
-/* Combo display with nature theme */
-.combo-display {
+.bird2 {
+    top: 15%;
+    background-image: url('https://i.imgur.com/FQHEUbs.png');
+    animation-duration: 20s;
+    animation-delay: 5s;
+}
+
+.bird3 {
+    top: 8%;
+    background-image: url('https://i.imgur.com/ZrUn3BU.png');
+    animation-duration: 25s;
+    animation-delay: 10s;
+}
+
+@keyframes fly-across {
+    0% {
+        left: -50px;
+        transform: translateY(0) scaleX(1);
+    }
+    45% {
+        transform: translateY(15px) scaleX(1);
+    }
+    50% {
+        left: 100%;
+        transform: translateY(0) scaleX(1);
+    }
+    50.1% {
+        transform: scaleX(-1);
+    }
+    95% {
+        transform: translateY(15px) scaleX(-1);
+    }
+    100% {
+        left: -50px;
+        transform: translateY(0) scaleX(-1);
+    }
+}
+
+.game-area {
+    width: 100%;
+    height: 500px;
+    position: relative;
+    overflow: hidden;
+    border-radius: 15px;
+    background: linear-gradient(to bottom, rgba(135, 206, 235, 0.8), rgba(70, 130, 180, 0.8));
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2), inset 0 0 50px rgba(255, 255, 255, 0.3);
+    border: 2px solid rgba(255, 255, 255, 0.5);
+}
+
+/* Enhanced balloon appearance */
+.balloon {
     position: absolute;
-    top: 120px;
+    width: 60px;
+    height: 80px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 1;
+    filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));
+    transform-origin: bottom center;
+    animation: balloon-float 2s ease-in-out infinite alternate;
+}
+
+/* Different balloon types with texture and forest-themed designs */
+.balloon.red {
+    background-image: url('https://i.imgur.com/TFpJe9w.png');
+}
+
+.balloon.blue {
+    background-image: url('https://i.imgur.com/YgYHaUD.png');
+}
+
+.balloon.green {
+    background-image: url('https://i.imgur.com/QQYzA2N.png');
+}
+
+.balloon.yellow {
+    background-image: url('https://i.imgur.com/6pBUEAu.png');
+}
+
+.balloon.purple {
+    background-image: url('https://i.imgur.com/SvzfVrY.png');
+}
+
+.balloon.orange {
+    background-image: url('https://i.imgur.com/TMxb8RO.png');
+}
+
+/* Balloon float animation */
+@keyframes balloon-float {
+    0% {
+        transform: rotate(-2deg) translateY(0);
+    }
+    100% {
+        transform: rotate(2deg) translateY(-5px);
+    }
+}
+
+/* Enhanced player line with glow effect */
+.player {
+    position: absolute;
     left: 50%;
+    bottom: 70px;
     transform: translateX(-50%);
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-    padding: 10px 20px;
-    border-radius: 25px;
-    color: white;
-    font-size: 18px;
-    font-weight: bold;
-    text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.5);
-    z-index: 10;
-    box-shadow: 0 0 20px rgba(46, 204, 113, 0.7);
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    animation: pulse 1.5s infinite;
+    width: 80px;
+    height: 15px;
+    background: linear-gradient(to bottom, #00bfff, #0080ff);
+    border-radius: 10px;
+    box-shadow: 0 0 15px #00bfff, 0 0 5px #00bfff;
+    z-index: 2;
+    transition: filter 0.3s ease;
 }
 
-@keyframes pulse {
-    0% { transform: translateX(-50%) scale(1); }
-    50% { transform: translateX(-50%) scale(1.1); }
-    100% { transform: translateX(-50%) scale(1); }
+/* Enhanced catching animation */
+@keyframes catchBounce {
+    0% {
+        transform: translateX(-50%) scaleX(1);
+        box-shadow: 0 0 15px #00bfff, 0 0 5px #00bfff;
+    }
+    50% {
+        transform: translateX(-50%) scaleX(1.2);
+        box-shadow: 0 0 30px #00ffff, 0 0 10px #00ffff;
+        filter: brightness(1.5);
+    }
+    100% {
+        transform: translateX(-50%) scaleX(1);
+        box-shadow: 0 0 15px #00bfff, 0 0 5px #00bfff;
+    }
 }
 
 /* Enhanced catch effect */
@@ -891,151 +940,293 @@ body {
     width: 40px;
     height: 40px;
     border-radius: 50%;
-    animation: catchEffect 0.5s ease-out forwards;
-    z-index: 5;
     opacity: 0.8;
-    box-shadow: 0 0 30px rgba(255, 255, 255, 0.8);
+    z-index: 3;
+    transform: translate(-50%, -50%);
+    animation: catch-effect 0.5s forwards;
+    filter: blur(2px);
 }
 
-@keyframes catchEffect {
-    0% { transform: scale(0.2); opacity: 1; }
-    100% { transform: scale(2); opacity: 0; }
+@keyframes catch-effect {
+    0% {
+        transform: translate(-50%, -50%) scale(0.5);
+        opacity: 0.8;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(2);
+        opacity: 0;
+    }
 }
 
-/* Score popup with nature theme */
-.score-popup {
-    position: absolute;
-    font-size: 24px;
-    font-weight: bold;
-    color: white;
-    text-shadow: 0 0 5px rgba(0, 0, 0, 0.8);
-    animation: scorePopup 1s ease-out forwards;
-    z-index: 10;
-}
-
-.score-popup[data-value="5"] {
-    color: gold;
-    font-size: 32px;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-}
-
-.score-popup[data-value="4"] {
-    color: #ff9500;
-    font-size: 28px;
-}
-
-.score-popup[data-value="3"] {
-    color: #00e676;
-    font-size: 26px;
-}
-
-.score-popup[data-value="2"] {
-    color: #40c4ff;
-}
-
-@keyframes scorePopup {
-    0% { transform: translateY(0) scale(0.8); opacity: 0; }
-    20% { transform: translateY(-15px) scale(1.2); opacity: 1; }
-    80% { transform: translateY(-30px) scale(1); opacity: 1; }
-    100% { transform: translateY(-45px) scale(0.8); opacity: 0; }
-}
-
-/* Level up message with nature theme */
+/* Enhanced level up animation */
 .level-up-message {
     position: absolute;
-    top: 40%;
+    top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: 48px;
+    background: rgba(255, 215, 0, 0.7);
+    color: #fff;
+    font-size: 36px;
     font-weight: bold;
-    color: #ffeb3b;
-    text-shadow: 
-        0 0 15px rgba(255, 235, 59, 0.8),
-        0 0 30px rgba(255, 235, 59, 0.5),
-        0 2px 5px rgba(0, 0, 0, 0.5);
-    text-align: center;
-    z-index: 100;
-    animation: levelUpPulse 2s ease-in-out;
-    background: rgba(0, 0, 0, 0.2);
     padding: 20px 40px;
+    border-radius: 15px;
+    text-align: center;
+    z-index: 10;
+    text-shadow: 0 0 10px #FF8C00, 0 0 20px #FF8C00;
+    box-shadow: 0 0 40px #FFD700, inset 0 0 20px rgba(255, 255, 255, 0.6);
+    animation: level-up-appear 0.5s ease-out forwards;
+}
+
+@keyframes level-up-appear {
+    0% {
+        transform: translate(-50%, -50%) scale(0);
+        opacity: 0;
+    }
+    70% {
+        transform: translate(-50%, -50%) scale(1.1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+}
+
+.level-up-message.fade-out {
+    animation: level-up-fade 1s forwards;
+}
+
+@keyframes level-up-fade {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+/* Game container with enhanced aesthetics */
+.game-container {
+    width: 90%;
+    max-width: 800px;
+    background-color: rgba(255, 255, 255, 0.7);
     border-radius: 20px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    margin: 20px auto;
     backdrop-filter: blur(5px);
+    border: 2px solid rgba(255, 255, 255, 0.8);
 }
 
-@keyframes levelUpPulse {
-    0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
-    20% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
-    70% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-    100% { transform: translate(-50%, -50%) scale(1.5); opacity: 0; }
+/* Game title with forest theme */
+h1 {
+    color: #2E7D32;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    margin-top: 0;
+    font-size: 2.5rem;
 }
 
-/* Game over screen with forest theme */
-.game-over {
+/* Game stats with better styling */
+.game-stats {
+    display: flex;
+    justify-content: space-between;
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
+    font-weight: bold;
+    color: #2E7D32;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Balloon string */
+.balloon-string {
     position: absolute;
-    top: 0;
-    left: 0;
+    bottom: -20px;
+    left: 50%;
+    width: 2px;
+    height: 20px;
+    background-color: rgba(255, 255, 255, 0.8);
+    transform: translateX(-50%);
+}
+
+/* Particle effect for pop animation */
+.particle {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    opacity: 0.8;
+    transform: translate(-50%, -50%);
+    animation: particle-move 1s forwards;
+}
+
+@keyframes particle-move {
+    0% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.8;
+    }
+    100% {
+        transform: 
+            translate(
+                calc(-50% + cos(var(--angle)) * var(--speed) * 50px),
+                calc(-50% + sin(var(--angle)) * var(--speed) * 50px)
+            )
+            scale(0.2);
+        opacity: 0;
+    }
+}
+
+/* Forest leaves animation */
+.forest-leaf {
+    position: absolute;
+    width: 15px;
+    height: 15px;
+    background-color: #8BC34A;
+    opacity: 0.8;
+    border-radius: 0 50% 50% 50%;
+    transform: rotate(45deg);
+    animation: leaf-fall 5s linear forwards;
+    z-index: 1;
+}
+
+@keyframes leaf-fall {
+    0% {
+        top: -20px;
+        transform: rotate(45deg) translateX(0);
+        opacity: 0.8;
+    }
+    50% {
+        transform: rotate(180deg) translateX(50px);
+        opacity: 0.9;
+    }
+    100% {
+        top: 100%;
+        transform: rotate(360deg) translateX(-50px);
+        opacity: 0;
+    }
+}
+
+/* Forest animal animation */
+.forest-animal {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    z-index: 3;
+    transition: left 1s ease-in-out;
+}
+
+.forest-animal img {
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.8);
+    object-fit: contain;
+}
+
+/* Mobile controls enhanced styling */
+.mobile-controls {
     display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    z-index: 50;
-    color: white;
-    text-align: center;
-    backdrop-filter: blur(8px);
-    border: 3px solid rgba(46, 204, 113, 0.5);
-    border-radius: 12px;
-}
-
-.game-over h2 {
-    font-size: 48px;
-    margin-bottom: 20px;
-    color: #ff5252;
-    text-shadow: 0 0 10px rgba(255, 82, 82, 0.7);
-}
-
-.game-over p {
-    font-size: 24px;
-    margin-bottom: 30px;
-}
-
-.restart-btn {
-    background: linear-gradient(135deg, #2ecc71, #27ae60);
-    color: white;
-    font-size: 20px;
-    font-weight: bold;
-    padding: 15px 40px;
-    border: none;
-    border-radius: 30px;
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(46, 204, 113, 0.4);
-    transition: all 0.3s ease;
+    justify-content: space-between;
     margin-top: 20px;
 }
 
-.restart-btn:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 8px 20px rgba(46, 204, 113, 0.6);
-    background: linear-gradient(135deg, #27ae60, #2ecc71);
+.control-btn {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    user-select: none;
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
 }
 
-.restart-btn:active {
-    transform: translateY(1px);
+.control-btn:active {
+    transform: scale(0.95);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-.high-score-message {
-    font-size: 28px;
+/* Combo display with forest theme */
+.combo-display {
+    position: absolute;
+    top: 70px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(46, 125, 50, 0.8);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 10px;
     font-weight: bold;
-    color: gold;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.8);
-    animation: glow 1.5s infinite alternate;
-    margin: 10px 0 20px;
+    font-size: 20px;
+    z-index: 5;
+    box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    animation: combo-pulse 1s infinite alternate;
 }
 
-@keyframes glow {
-    from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.8); }
-    to { text-shadow: 0 0 20px rgba(255, 215, 0, 1), 0 0 30px rgba(255, 215, 0, 0.5); }
+@keyframes combo-pulse {
+    0% {
+        transform: translateX(-50%) scale(1);
+        box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+    }
+    100% {
+        transform: translateX(-50%) scale(1.05);
+        box-shadow: 0 0 25px rgba(0, 255, 0, 0.7);
+    }
+}
+
+/* Score popup with forest theme */
+.score-popup {
+    position: absolute;
+    color: white;
+    font-weight: bold;
+    font-size: 24px;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    z-index: 5;
+    animation: score-float 1s forwards;
+}
+
+.score-popup[data-value="2"] {
+    color: #FFEB3B;
+    font-size: 28px;
+    text-shadow: 0 0 8px rgba(255, 235, 59, 0.7);
+}
+
+.score-popup[data-value="3"] {
+    color: #FF9800;
+    font-size: 32px;
+    text-shadow: 0 0 10px rgba(255, 152, 0, 0.7);
+}
+
+.score-popup[data-value="4"] {
+    color: #F44336;
+    font-size: 36px;
+    text-shadow: 0 0 12px rgba(244, 67, 54, 0.7);
+}
+
+.score-popup[data-value="5"] {
+    color: #E91E63;
+    font-size: 40px;
+    text-shadow: 0 0 15px rgba(233, 30, 99, 0.7);
+}
+
+@keyframes score-float {
+    0% {
+        transform: translate(-50%, 0) scale(0.5);
+        opacity: 0;
+    }
+    20% {
+        transform: translate(-50%, -20px) scale(1.2);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(-50%, -80px) scale(1);
+        opacity: 0;
+    }
 } 

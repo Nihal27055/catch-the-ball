@@ -161,10 +161,17 @@ function createBall() {
     // Random position
     const position = Math.random() * 100;
     
-    // Random balloon color
+    // Forest-themed balloon colors
     const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
     ball.classList.add(randomColor);
+    
+    // Randomly add a string to some balloons for a more realistic look
+    if (Math.random() > 0.5) {
+        const string = document.createElement('div');
+        string.classList.add('balloon-string');
+        ball.appendChild(string);
+    }
     
     ball.style.left = `${position}%`;
     ball.style.top = '0';
@@ -187,8 +194,9 @@ function createBall() {
         position: position,
         top: 0,
         speed: calculatedSpeed,
-        width: 30, // Ball width in pixels
-        height: 40 // Ball height in pixels
+        width: 60, // Updated balloon width
+        height: 80, // Updated balloon height
+        color: randomColor
     });
 }
 
@@ -196,16 +204,58 @@ function createBall() {
 function createCatchEffect(x, y, color) {
     const effect = document.createElement('div');
     effect.classList.add('catch-effect');
+    
+    // Get balloon color for the effect
+    let effectColor = '#ff0000'; // default red
+    if (color === 'blue') effectColor = '#0066ff';
+    if (color === 'green') effectColor = '#00cc00';
+    if (color === 'yellow') effectColor = '#ffcc00';
+    if (color === 'purple') effectColor = '#9900cc';
+    if (color === 'orange') effectColor = '#ff6600';
+    
+    effect.style.backgroundColor = effectColor;
     effect.style.left = `${x}px`;
     effect.style.top = `${y}px`;
-    effect.style.backgroundColor = color;
     
     gameArea.appendChild(effect);
     
+    // Add particle burst effect
+    createParticles(x, y, effectColor);
+    
     // Remove the effect after animation completes
     setTimeout(() => {
-        gameArea.removeChild(effect);
+        if (gameArea.contains(effect)) {
+            gameArea.removeChild(effect);
+        }
     }, 500);
+}
+
+// Create particles for catch effect
+function createParticles(x, y, color) {
+    const particleCount = 8;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.classList.add('particle');
+        particle.style.backgroundColor = color;
+        particle.style.left = `${x}px`;
+        particle.style.top = `${y}px`;
+        
+        // Random direction
+        const angle = (i / particleCount) * Math.PI * 2;
+        const speed = 2 + Math.random() * 2;
+        particle.style.setProperty('--angle', angle + 'rad');
+        particle.style.setProperty('--speed', speed);
+        
+        gameArea.appendChild(particle);
+        
+        // Remove particle after animation
+        setTimeout(() => {
+            if (gameArea.contains(particle)) {
+                gameArea.removeChild(particle);
+            }
+        }, 1000);
+    }
 }
 
 // Show score increase animation
@@ -267,6 +317,9 @@ function update(timestamp) {
         level = newLevel;
         // Display level up message
         showLevelUpMessage(level);
+        
+        // Add forest animation effect when leveling up
+        addForestEffect();
     }
     
     // Reset combo if too much time has passed since last catch
@@ -457,6 +510,9 @@ function showLevelUpMessage(level) {
     // Play level up sound
     playSound('levelup');
     
+    // Create forest animals that peek out on level up
+    createForestAnimal();
+    
     setTimeout(() => {
         levelUpMsg.classList.add('fade-out');
         setTimeout(() => {
@@ -465,6 +521,72 @@ function showLevelUpMessage(level) {
             }
         }, 1000);
     }, 2000);
+}
+
+// Create a forest animal that peeks from the side on level up
+function createForestAnimal() {
+    const animals = [
+        'https://i.imgur.com/XZxmAOh.png', // deer
+        'https://i.imgur.com/hXjqpng.png', // fox
+        'https://i.imgur.com/VQ5Lcmb.png', // rabbit
+        'https://i.imgur.com/sMYPufA.png'  // squirrel
+    ];
+    
+    const animal = document.createElement('div');
+    animal.classList.add('forest-animal');
+    
+    // Randomly position left or right
+    const isRight = Math.random() > 0.5;
+    animal.style.left = isRight ? '100%' : '-100px';
+    animal.style.bottom = (Math.random() * 30) + '%';
+    animal.style.transform = `scaleX(${isRight ? -1 : 1})`;
+    
+    // Random animal
+    const animalImg = document.createElement('img');
+    animalImg.src = animals[Math.floor(Math.random() * animals.length)];
+    animal.appendChild(animalImg);
+    
+    gameArea.appendChild(animal);
+    
+    // Animate in
+    setTimeout(() => {
+        animal.style.left = isRight ? 'calc(100% - 80px)' : '0';
+    }, 100);
+    
+    // Animate out and remove
+    setTimeout(() => {
+        animal.style.left = isRight ? '100%' : '-100px';
+        setTimeout(() => {
+            if (gameArea.contains(animal)) {
+                gameArea.removeChild(animal);
+            }
+        }, 1000);
+    }, 3000);
+}
+
+// Add forest animation effect
+function addForestEffect() {
+    // Create leaves falling effect
+    for (let i = 0; i < 20; i++) {
+        const leaf = document.createElement('div');
+        leaf.classList.add('forest-leaf');
+        leaf.style.left = Math.random() * 100 + '%';
+        leaf.style.animationDuration = (2 + Math.random() * 3) + 's';
+        leaf.style.animationDelay = (Math.random() * 2) + 's';
+        
+        // Random leaf color
+        const leafColors = ['#8BC34A', '#689F38', '#558B2F', '#33691E'];
+        leaf.style.backgroundColor = leafColors[Math.floor(Math.random() * leafColors.length)];
+        
+        gameArea.appendChild(leaf);
+        
+        // Remove leaf after animation
+        setTimeout(() => {
+            if (gameArea.contains(leaf)) {
+                gameArea.removeChild(leaf);
+            }
+        }, 5000);
+    }
 }
 
 // Restart the game

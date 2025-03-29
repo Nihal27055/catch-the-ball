@@ -7,87 +7,99 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- Birds in sky -->
+    <div class="bird bird1"></div>
+    <div class="bird bird2"></div>
+    <div class="bird bird3"></div>
+    
     <div class="game-container">
+        <h1>Catch the Balloon</h1>
+        <div class="game-stats">
+            <div>Score: <span id="score">0</span></div>
+            <div>Lives: <span id="lives">20</span></div>
+            <div>High Score: <span id="high-score">0</span></div>
+        </div>
+        
+        <div id="combo-display" class="combo-display">
+            <div class="combo-text">COMBO x<span id="combo-count">1</span></div>
+        </div>
+        
         <div id="game-area" class="game-area">
             <div id="player" class="player"></div>
-            
-            <div id="controls" class="mobile-controls">
-                <div id="left-control" class="control left-control">←</div>
-                <div id="right-control" class="control right-control">→</div>
-            </div>
-            
-            <div id="score-display" class="score-display">
-                <div class="score-item">Score: <span id="score">0</span></div>
-                <div class="score-item">Lives: <span id="lives">20</span></div>
-                <div class="score-item">High: <span id="high-score">0</span></div>
-            </div>
-            
-            <div id="combo-display" class="combo-display">
-                <div class="combo-text">COMBO × <span id="combo-count">1</span></div>
-            </div>
-            
-            <div id="game-over" class="game-over hidden">
-                <h2>Game Over</h2>
-                <p>Your Score: <span id="final-score">0</span></p>
-                <p id="high-score-message" class="high-score-message hidden">New High Score!</p>
-                <button id="restart-btn" class="restart-btn">Play Again</button>
-            </div>
-            
-            <div id="instructions-screen" class="instructions-screen">
-                <div class="instructions-content">
-                    <h2>How to Play</h2>
-                    <div class="instruction-items">
-                        <div class="instruction-item">
-                            <div class="instruction-icon">⌨️</div>
-                            <div class="instruction-text">Use <strong>← →</strong> arrow keys</div>
-                        </div>
-                        <div class="instruction-item">
-                            <div class="instruction-icon">📱</div>
-                            <div class="instruction-text">On mobile, use on-screen buttons</div>
-                        </div>
-                        <div class="instruction-item">
-                            <div class="instruction-icon">🎯</div>
-                            <div class="instruction-text">Catch balloons with the blue line</div>
-                        </div>
-                        <div class="instruction-item">
-                            <div class="instruction-icon">❤️</div>
-                            <div class="instruction-text">You have 20 lives</div>
-                        </div>
-                        <div class="instruction-item">
-                            <div class="instruction-icon">🏆</div>
-                            <div class="instruction-text">Score points and try to beat your high score!</div>
-                        </div>
-                    </div>
-                    <button id="start-game-btn" class="start-game-btn">Start Game</button>
+        </div>
+        
+        <div class="mobile-controls">
+            <div id="left-control" class="control-btn">←</div>
+            <div id="right-control" class="control-btn">→</div>
+        </div>
+        
+        <div id="game-over" class="game-over hidden">
+            <h2>Game Over</h2>
+            <div id="high-score-message" class="high-score-message hidden">New High Score!</div>
+            <p>Your score: <span id="final-score">0</span></p>
+            <button id="restart-btn" class="btn">Play Again</button>
+        </div>
+        
+        <!-- Instructions screen -->
+        <div id="instructions-screen" class="instructions-screen">
+            <h2>How to Play</h2>
+            <div class="instruction-items">
+                <div class="instruction-item">
+                    <div class="instruction-icon">⌨️</div>
+                    <div class="instruction-text">Use the <strong>LEFT</strong> and <strong>RIGHT</strong> arrow keys to move</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">📱</div>
+                    <div class="instruction-text">On mobile, use the buttons at the bottom of the screen</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">🎯</div>
+                    <div class="instruction-text">Catch the falling balloons with the blue line</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">⚡</div>
+                    <div class="instruction-text">Catch balloons quickly for combo points</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">❤️</div>
+                    <div class="instruction-text">You have 20 lives - don't let balloons hit the bottom!</div>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">🌟</div>
+                    <div class="instruction-text">Level up every 20 points - speed increases each level!</div>
                 </div>
             </div>
-            
-            <div id="instructions-toggle" class="instructions-toggle">?</div>
-            
-            <div id="side-instructions" class="side-instructions">
-                <button id="close-side-instructions" class="close-btn">×</button>
-                <h3>How to Play</h3>
-                <div class="instruction-items">
-                    <div class="instruction-item">
-                        <div class="instruction-icon">⌨️</div>
-                        <div class="instruction-text">Use <strong>← →</strong> arrow keys</div>
-                    </div>
-                    <div class="instruction-item">
-                        <div class="instruction-icon">📱</div>
-                        <div class="instruction-text">On mobile, use on-screen buttons</div>
-                    </div>
-                    <div class="instruction-item">
-                        <div class="instruction-icon">🎯</div>
-                        <div class="instruction-text">Catch balloons with the blue line</div>
-                    </div>
-                    <div class="instruction-item">
-                        <div class="instruction-icon">❤️</div>
-                        <div class="instruction-text">You have 20 lives</div>
-                    </div>
-                </div>
+            <button id="start-game-btn" class="btn">Start Game</button>
+        </div>
+    </div>
+    
+    <!-- Side instructions toggle -->
+    <div id="instructions-toggle" class="instructions-toggle">?</div>
+    
+    <!-- Side instructions panel -->
+    <div id="side-instructions" class="side-instructions">
+        <button id="close-side-instructions" class="close-btn">×</button>
+        <h3>How to Play</h3>
+        <div class="instruction-items">
+            <div class="instruction-item">
+                <div class="instruction-icon">⌨️</div>
+                <div class="instruction-text">Use arrow keys to move</div>
+            </div>
+            <div class="instruction-item">
+                <div class="instruction-icon">🎯</div>
+                <div class="instruction-text">Catch balloons with blue line</div>
+            </div>
+            <div class="instruction-item">
+                <div class="instruction-icon">⚡</div>
+                <div class="instruction-text">Quick catches = combo points</div>
+            </div>
+            <div class="instruction-item">
+                <div class="instruction-icon">❤️</div>
+                <div class="instruction-text">20 lives - don't miss!</div>
             </div>
         </div>
     </div>
+    
     <script src="script.js"></script>
 </body>
 </html> 
