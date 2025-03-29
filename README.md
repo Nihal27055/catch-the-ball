@@ -12,7 +12,7 @@ A fun and interactive game where players need to catch falling balloons before t
 - Touch controls for mobile devices, keyboard controls for PC
 - Progressive level system with gradually increasing difficulty
 - Quick-catch scoring system - catch balloons quickly to earn more points
-- 50 lives to make gameplay more forgiving
+- 20 lives to make gameplay more forgiving
 - Persistent high score tracking (saved between sessions)
 
 ## How to Play
@@ -21,7 +21,7 @@ A fun and interactive game where players need to catch falling balloons before t
 - Catch the falling balloons with your line to increase your score
 - Catch balloons quickly to earn bonus points
 - Don't let the balloons touch the red line at the bottom, or you'll lose a life
-- Game ends when all 50 lives are lost
+- Game ends when all 20 lives are lost
 - Try to beat your high score with each playthrough
 
 ### Scoring System

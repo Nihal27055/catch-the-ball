@@ -14,7 +14,7 @@ const comboCountElement = document.getElementById('combo-count');
 
 // Game variables
 let score = 0;
-let lives = 50;
+let lives = 20;
 let highScore = localStorage.getItem('catchBallHighScore') || 0;
 let gameRunning = true;
 let playerPosition = 50; // percentage from left
@@ -426,7 +426,7 @@ function showLevelUpMessage(level) {
 function restartGame() {
     // Reset game variables
     score = 0;
-    lives = 50;
+    lives = 20;
     level = 1;
     gameRunning = true;
     playerPosition = 50;
