@@ -11,12 +11,19 @@ const restartBtn = document.getElementById('restart-btn');
 const highScoreElement = document.getElementById('high-score');
 const comboDisplay = document.getElementById('combo-display');
 const comboCountElement = document.getElementById('combo-count');
+const instructionsScreen = document.getElementById('instructions-screen');
+const startGameBtn = document.getElementById('start-game-btn');
+
+// Sound effects
+const catchSound = new Audio('sounds/catch.mp3');
+const missSound = new Audio('sounds/miss.mp3');
+const levelUpSound = new Audio('sounds/levelup.mp3');
 
 // Game variables
 let score = 0;
 let lives = 20;
 let highScore = localStorage.getItem('catchBallHighScore') || 0;
-let gameRunning = true;
+let gameRunning = false; // Start with game paused to show instructions
 let playerPosition = 50; // percentage from left
 let playerWidth = 80; // in pixels
 let playerSpeed = 10; // percentage per move (increased from 5 for smoother movement)
@@ -60,11 +67,11 @@ function init() {
     // Add restart button event listener
     restartBtn.addEventListener('click', restartGame);
     
+    // Add start game button event listener
+    startGameBtn.addEventListener('click', startGame);
+    
     // Handle window resize
     window.addEventListener('resize', updateDimensions);
-    
-    // Start the game loop
-    gameLoop = requestAnimationFrame(update);
     
     // If it's a mobile device, add the swipe controls
     if (isMobile) {
@@ -73,6 +80,14 @@ function init() {
     
     // Hide combo display initially
     comboDisplay.classList.add('hidden');
+    
+    // Show instructions screen at startup
+    instructionsScreen.classList.remove('hidden');
+    
+    // Preload sounds
+    catchSound.load();
+    missSound.load();
+    levelUpSound.load();
 }
 
 // Update game dimensions
@@ -379,10 +394,23 @@ function update(timestamp) {
     gameLoop = requestAnimationFrame(update);
 }
 
-// Simple sound effects (placeholder functions, can be implemented with actual sounds)
+// Simple sound effects
 function playSound(type) {
-    // Placeholder for sound effects
-    // In a real game, you would create and play audio elements here
+    try {
+        if (type === 'catch') {
+            // Stop and reset the sound before playing again
+            catchSound.currentTime = 0;
+            catchSound.play();
+        } else if (type === 'miss') {
+            missSound.currentTime = 0;
+            missSound.play();
+        } else if (type === 'levelup') {
+            levelUpSound.currentTime = 0;
+            levelUpSound.play();
+        }
+    } catch (e) {
+        console.log("Error playing sound:", e);
+    }
 }
 
 // Game over
@@ -411,6 +439,9 @@ function showLevelUpMessage(level) {
     levelUpMsg.textContent = `Level ${level}!`;
     
     gameArea.appendChild(levelUpMsg);
+    
+    // Play level up sound
+    playSound('levelup');
     
     setTimeout(() => {
         levelUpMsg.classList.add('fade-out');
@@ -454,6 +485,20 @@ function restartGame() {
     
     // Restart game loop
     lastSpawnTime = 0;
+    gameLoop = requestAnimationFrame(update);
+}
+
+// Show instructions again
+function showInstructions() {
+    gameRunning = false;
+    instructionsScreen.classList.remove('hidden');
+    cancelAnimationFrame(gameLoop);
+}
+
+// Start the game after viewing instructions
+function startGame() {
+    instructionsScreen.classList.add('hidden');
+    gameRunning = true;
     gameLoop = requestAnimationFrame(update);
 }
 

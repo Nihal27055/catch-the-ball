@@ -32,11 +32,44 @@
             <div id="right-control" class="control-btn">▶</div>
         </div>
         
+        <!-- Instructions screen -->
+        <div id="instructions-screen" class="hidden">
+            <div class="instructions-content">
+                <h2>How to Play</h2>
+                <div class="instruction-item">
+                    <div class="instruction-icon">⌨️</div>
+                    <p>On PC: Use left and right arrow keys to move the line</p>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">👆</div>
+                    <p>On mobile: Touch the left or right buttons to move</p>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">🎯</div>
+                    <p>Catch the falling balloons with your line</p>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">⚡</div>
+                    <p>Catch quickly to earn bonus points</p>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">⚠️</div>
+                    <p>Don't let balloons touch the red line or you'll lose a life</p>
+                </div>
+                <div class="instruction-item">
+                    <div class="instruction-icon">🔢</div>
+                    <p>You have 20 lives - try to get the highest score!</p>
+                </div>
+                <button id="start-game-btn" class="start-btn">Start Game</button>
+            </div>
+        </div>
+        
         <div id="game-over" class="hidden">
             <h2>Game Over</h2>
             <p>Your score: <span id="final-score">0</span></p>
             <p id="high-score-message" class="hidden">New High Score!</p>
             <button id="restart-btn">Play Again</button>
+            <button id="instructions-btn" onclick="showInstructions()">Instructions</button>
         </div>
         
         <!-- Combo display -->

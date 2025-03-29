@@ -13,6 +13,8 @@ A fun and interactive game where players need to catch falling balloons before t
 - Progressive level system with gradually increasing difficulty
 - Quick-catch scoring system - catch balloons quickly to earn more points
 - 20 lives to make gameplay more forgiving
+- Interactive instructions screen with gameplay guidance
+- Sound effects for catching balloons, misses, and level ups
 - Persistent high score tracking (saved between sessions)
 
 ## How to Play
@@ -30,16 +32,24 @@ A fun and interactive game where players need to catch falling balloons before t
 - Every 20 points progresses you to the next level
 - Higher levels bring slightly increased challenge
 
+## Sound Effects
+The game includes sound effects that enhance the playing experience:
+- Catch sound: Plays when a balloon is successfully caught
+- Miss sound: Plays when a balloon hits the red line
+- Level up sound: Plays when you progress to a new level
+
 ## Technologies
 - HTML5
 - CSS3
 - JavaScript
+- Web Audio API for sound effects
 - LocalStorage API for persistent high score data
 
 ## Installation
 1. Clone this repository
-2. Open `index.html` in your browser
-3. Enjoy the game!
+2. Add your own sound files to the `sounds` folder (see `sounds/README.txt` for details)
+3. Open `index.html` in your browser
+4. Enjoy the game!
 
 ## License
 MIT 
