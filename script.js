@@ -76,13 +76,24 @@ function init() {
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
     
-    // Make sure the start button works
+    // Make sure the start button works - FIXED HERE
     if (startGameBtn) {
-        startGameBtn.onclick = startGame;
+        // Remove any existing listeners first
+        startGameBtn.replaceWith(startGameBtn.cloneNode(true));
+        // Get the new button reference
+        const newStartBtn = document.getElementById('start-game-btn');
+        // Add the event listener
+        newStartBtn.addEventListener('click', function() {
+            console.log("Start button clicked!");
+            startGame();
+        });
+        console.log("Start button event listener added");
+    } else {
+        console.error("Start button not found in the DOM!");
     }
     
     if (restartBtn) {
-        restartBtn.onclick = restartGame;
+        restartBtn.addEventListener('click', restartGame);
     }
     
     // Mobile controls
@@ -95,8 +106,13 @@ function init() {
     }
     
     // Add side instructions toggle event listeners
-    instructionsToggle.addEventListener('click', toggleSideInstructions);
-    closeSideInstructions.addEventListener('click', closeSideInstructionsPanel);
+    if (instructionsToggle) {
+        instructionsToggle.addEventListener('click', toggleSideInstructions);
+    }
+    
+    if (closeSideInstructions) {
+        closeSideInstructions.addEventListener('click', closeSideInstructionsPanel);
+    }
     
     // Handle window resize
     window.addEventListener('resize', updateDimensions);

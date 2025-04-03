@@ -326,15 +326,31 @@ button {
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    position: relative;
+    z-index: 10;
 }
 
 button:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(to bottom, #5CBF60, #3E8D42);
 }
 
 button:active {
     transform: translateY(1px);
+}
+
+#start-game-btn {
+    background: linear-gradient(to bottom, #FF9800, #F57C00);
+    font-size: 1.2em;
+    padding: 15px 30px;
+    margin-top: 10px;
+    box-shadow: 0 5px 15px rgba(255, 152, 0, 0.3);
+}
+
+#start-game-btn:hover {
+    background: linear-gradient(to bottom, #FFA726, #FB8C00);
+    box-shadow: 0 8px 20px rgba(255, 152, 0, 0.4);
 }
 
 /* Mobile Responsive */
@@ -587,6 +603,7 @@ button:active {
         90px 80px 0 5px rgba(255, 255, 255, 0.3);
     animation: cloudMove 30s linear infinite;
     z-index: 1;
+    pointer-events: none;
 }
 
 @keyframes cloudMove {
@@ -611,6 +628,7 @@ button:active {
     background-position: 0 0, 50px 0, 30px 0, 150px 0;
     background-repeat: repeat-x;
     z-index: 1;
+    pointer-events: none;
 }
 
 /* Ensure player and balloons appear above background elements */
