@@ -666,7 +666,19 @@ button:active {
     background: radial-gradient(circle at 30% 30%, #fff099, #ffcc00);
 }
 
-/* Rainbow balloon effect */
+/* Rainbow score animation */
+.rainbow-score {
+    background: linear-gradient(to right, 
+        #ff0000, #ff9900, #ffff00, #33cc33, #3399ff, #9933ff, #ff3399);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent !important;
+    font-weight: bold;
+    text-shadow: none !important;
+    filter: drop-shadow(0px 0px 2px rgba(255, 255, 255, 0.7));
+}
+
+/* Enhance rainbow balloon effect */
 @keyframes rainbowEffect {
     0% { background: radial-gradient(circle at 30% 30%, #ff9999, #ff0000); }
     14% { background: radial-gradient(circle at 30% 30%, #ffcc99, #ff6600); }
@@ -681,6 +693,18 @@ button:active {
 .balloon.rainbow-effect {
     animation: rainbowEffect 1s linear infinite !important;
     box-shadow: 0 0 15px rgba(255, 255, 255, 0.8) !important;
+    transform-origin: center bottom;
+    animation-name: rainbowEffect, floatUp !important;
+    animation-duration: 1s, 2s !important;
+    animation-timing-function: linear, ease-in-out !important;
+    animation-iteration-count: infinite, infinite !important;
+    animation-direction: normal, alternate !important;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(0) rotate(-1deg); }
+    50% { transform: translateY(-5px) rotate(1deg); }
+    100% { transform: translateY(0) rotate(-1deg); }
 }
 
 /* Score pop animation */

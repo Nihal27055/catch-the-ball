@@ -224,50 +224,61 @@ function createBalloon() {
     const balloon = document.createElement('div');
     balloon.className = 'balloon';
     
+    // Chance for a rainbow balloon (increases with level)
+    const rainbowChance = (level - 1) * 0.05; // 0% at level 1, 5% at level 2, 10% at level 3, etc.
+    const isRainbow = Math.random() < rainbowChance;
+    
     // Add variety of balloon colors
     const colors = [
         'red', 'blue', 'green', 'purple', 'orange', 'pink', 'yellow'
     ];
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    balloon.classList.add(randomColor);
     
-    // Set balloon gradient based on color
-    let gradientStart, gradientEnd;
-    switch(randomColor) {
-        case 'red':
-            gradientStart = '#ff9999';
-            gradientEnd = '#ff0000';
-            break;
-        case 'blue':
-            gradientStart = '#99c2ff';
-            gradientEnd = '#0066ff';
-            break;
-        case 'green':
-            gradientStart = '#99ffa2';
-            gradientEnd = '#00cc00';
-            break;
-        case 'purple':
-            gradientStart = '#d299ff';
-            gradientEnd = '#9900cc';
-            break;
-        case 'orange':
-            gradientStart = '#ffcc99';
-            gradientEnd = '#ff6600';
-            break;
-        case 'pink':
-            gradientStart = '#ffb8e6';
-            gradientEnd = '#ff3399';
-            break;
-        case 'yellow':
-            gradientStart = '#fff099';
-            gradientEnd = '#ffcc00';
-            break;
-        default:
-            gradientStart = '#ff9999';
-            gradientEnd = '#ff0000';
+    if (isRainbow) {
+        balloon.classList.add('rainbow-effect');
+    } else {
+        balloon.classList.add(randomColor);
     }
     
-    balloon.style.background = `radial-gradient(circle at 30% 30%, ${gradientStart}, ${gradientEnd})`;
+    // Set balloon gradient based on color (unless it's rainbow)
+    if (!isRainbow) {
+        let gradientStart, gradientEnd;
+        switch(randomColor) {
+            case 'red':
+                gradientStart = '#ff9999';
+                gradientEnd = '#ff0000';
+                break;
+            case 'blue':
+                gradientStart = '#99c2ff';
+                gradientEnd = '#0066ff';
+                break;
+            case 'green':
+                gradientStart = '#99ffa2';
+                gradientEnd = '#00cc00';
+                break;
+            case 'purple':
+                gradientStart = '#d299ff';
+                gradientEnd = '#9900cc';
+                break;
+            case 'orange':
+                gradientStart = '#ffcc99';
+                gradientEnd = '#ff6600';
+                break;
+            case 'pink':
+                gradientStart = '#ffb8e6';
+                gradientEnd = '#ff3399';
+                break;
+            case 'yellow':
+                gradientStart = '#fff099';
+                gradientEnd = '#ffcc00';
+                break;
+            default:
+                gradientStart = '#ff9999';
+                gradientEnd = '#ff0000';
+        }
+        
+        balloon.style.background = `radial-gradient(circle at 30% 30%, ${gradientStart}, ${gradientEnd})`;
+    }
     
     // Random position
     const randomX = Math.random() * (gameArea.offsetWidth - 30);
@@ -275,11 +286,26 @@ function createBalloon() {
     
     gameArea.appendChild(balloon);
     
+    // Adjust balloon speed based on level - much slower at level 1
+    let balloonSpeed;
+    if (level === 1) {
+        balloonSpeed = ballSpeed * 0.7; // 30% slower at level 1
+    } else {
+        balloonSpeed = ballSpeed * (1 + (level - 2) * 0.1); // Normal scaling from level 2+
+    }
+    
+    // Rainbow balloons are worth more but fall faster
+    if (isRainbow) {
+        balloonSpeed *= 1.3; // 30% faster
+    }
+    
     balls.push({
         element: balloon,
         y: -40,
-        speed: ballSpeed * (level > 1 ? 1 + (level - 1) * 0.1 : 1), // Increase speed with level
-        color: randomColor
+        speed: balloonSpeed,
+        color: isRainbow ? 'rainbow' : randomColor,
+        isRainbow: isRainbow,
+        value: isRainbow ? 3 : 1 // Rainbow balloons are worth 3 points
     });
 }
 
@@ -406,8 +432,14 @@ function update(timestamp) {
         showLevelUpMessage(level);
         
         // Make game harder by increasing spawn rate and ball speed
-        spawnRate = Math.max(spawnRateMin, 1500 - (level - 1) * 100);
-        ballSpeed = 1.5 + (level - 1) * 0.2;
+        // Level 1: Very slow, Level 2: Medium, Level 3+: Progressively harder
+        if (level === 2) {
+            spawnRate = 1300; // Medium difficulty at level 2
+            ballSpeed = 1.8;
+        } else if (level > 2) {
+            spawnRate = Math.max(spawnRateMin, 1300 - (level - 2) * 100);
+            ballSpeed = 1.8 + (level - 2) * 0.2;
+        }
         
         // Add rainbow effect to all balloons
         makeBalloonsRainbow();
@@ -469,8 +501,8 @@ function update(timestamp) {
         // Collision detection with the bowl
         if (ballBottom >= playerTop && ballBottom <= playerTop + 40) {
             if (ballCenter >= playerLeft && ballCenter <= playerRight) {
-                // Balloon caught
-                score++;
+                // Balloon caught - add points based on balloon value
+                score += ball.value;
                 scoreElement.textContent = score;
                 
                 // Update high score if needed
@@ -492,14 +524,14 @@ function update(timestamp) {
                 createCatchEffect(ballCenter, playerTop, ball.color);
                 
                 // Show score pop-up animation
-                showScorePopAnimation(ballCenter, playerTop - 20);
+                showScorePopAnimation(ballCenter, playerTop - 20, ball.value);
+                
+                // Play catch sound - special sound for rainbow balloons
+                playSound(ball.isRainbow ? 'special' : 'catch');
                 
                 // Remove balloon
                 ball.element.remove();
                 balls.splice(i, 1);
-                
-                // Play catch sound
-                playSound('catch');
                 continue;
             }
         }
@@ -542,6 +574,11 @@ function playSound(type) {
         } else if (type === 'levelup') {
             levelUpSound.currentTime = 0;
             levelUpSound.play();
+        } else if (type === 'special') {
+            // Special sound for rainbow balloons
+            const specialSound = new Audio('sounds/special.mp3');
+            specialSound.currentTime = 0;
+            specialSound.play();
         }
     } catch (e) {
         console.log("Error playing sound:", e);
@@ -684,8 +721,8 @@ function startGame() {
     lives = 10;
     balls = [];
     level = 1;
-    spawnRate = 1500; // Reset spawn rate
-    ballSpeed = 1.5; // Reset ball speed
+    spawnRate = 2000; // Slow spawn rate at level 1
+    ballSpeed = 1.2; // Slow ball speed at level 1
     scoreElement.textContent = score;
     livesElement.textContent = lives;
     playerPosition = 50;
@@ -736,18 +773,26 @@ function makeBalloonsRainbow() {
 }
 
 // Show score pop animation
-function showScorePopAnimation(x, y) {
+function showScorePopAnimation(x, y, value) {
     const popup = document.createElement('div');
     popup.className = 'score-pop';
-    popup.textContent = '+1';
+    
+    // Show the actual point value
+    popup.textContent = `+${value}`;
     
     // Position popup
     popup.style.left = `${x}px`;
     popup.style.top = `${y}px`;
     
+    // Apply multiplier and special styling for rainbow balloons
+    if (value > 1) {
+        popup.classList.add('rainbow-score');
+        popup.style.fontSize = `${18}px`;
+    }
+    
     // Apply higher value for combo
     if (scoreMultiplier > 1) {
-        popup.textContent = `+${scoreMultiplier}`;
+        popup.textContent = `+${value * scoreMultiplier}`;
         popup.style.fontSize = `${16 + scoreMultiplier * 2}px`;
         popup.style.color = getComboColor(scoreMultiplier);
     }
