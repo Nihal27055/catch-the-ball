@@ -224,8 +224,8 @@ function createBalloon() {
     const balloon = document.createElement('div');
     balloon.className = 'balloon';
     
-    // Chance for a rainbow balloon (increases with level)
-    const rainbowChance = (level - 1) * 0.05; // 0% at level 1, 5% at level 2, 10% at level 3, etc.
+    // Increased chance for rainbow balloons (15% chance from level 2+)
+    const rainbowChance = level === 1 ? 0 : 0.15;
     const isRainbow = Math.random() < rainbowChance;
     
     // Add variety of balloon colors
@@ -424,8 +424,18 @@ function update(timestamp) {
     const deltaTime = timestamp - lastTime || 16.7;
     lastTime = timestamp;
     
-    // Check for level up based on score
-    let newLevel = Math.floor(score / 10) + 1; // Level up every 10 points
+    // Change level progression to 30, 60, 90 points
+    let newLevel;
+    if (score < 30) {
+        newLevel = 1;
+    } else if (score < 60) {
+        newLevel = 2;
+    } else if (score < 90) {
+        newLevel = 3;
+    } else {
+        newLevel = Math.floor((score - 90) / 30) + 4; // Level 4+ every 30 points
+    }
+    
     if (newLevel > level) {
         level = newLevel;
         // Display level up message
@@ -605,7 +615,18 @@ function gameOver() {
 function showLevelUpMessage(level) {
     const levelUpMsg = document.createElement('div');
     levelUpMsg.classList.add('level-up-message');
-    levelUpMsg.innerHTML = `Level ${level}!<br><span style="font-size: 24px;">Speed Increased!</span>`;
+    
+    // Custom messages based on level
+    let message = '';
+    if (level === 2) {
+        message = 'Medium difficulty! More rainbow balloons!';
+    } else if (level === 3) {
+        message = 'Hard difficulty! Speed increased!';
+    } else if (level >= 4) {
+        message = 'Expert difficulty! Good luck!';
+    }
+    
+    levelUpMsg.innerHTML = `Level ${level}!<br><span style="font-size: 24px;">${message}</span>`;
     
     gameArea.appendChild(levelUpMsg);
     
@@ -760,14 +781,23 @@ function makeBalloonsRainbow() {
         const originalClasses = balloon.className;
         const originalBackground = balloon.style.background;
         
+        // Skip if already rainbow
+        if (originalClasses.includes('rainbow-effect')) {
+            return;
+        }
+        
         // Add rainbow animation class
         balloon.classList.add('rainbow-effect');
         
         // Reset after 2 seconds
         setTimeout(() => {
-            balloon.classList.remove('rainbow-effect');
-            balloon.className = originalClasses;
-            balloon.style.background = originalBackground;
+            // Only restore if balloon still exists
+            if (gameArea.contains(balloon)) {
+                balloon.classList.remove('rainbow-effect');
+                // Set back to original color class but keep balloon class
+                balloon.className = originalClasses;
+                balloon.style.background = originalBackground;
+            }
         }, 2000);
     });
 }
