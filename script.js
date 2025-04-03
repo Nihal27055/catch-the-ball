@@ -24,18 +24,18 @@ const levelUpSound = new Audio('sounds/levelup.mp3');
 
 // Game variables
 let score = 0;
-let lives = 20;
-let highScore = localStorage.getItem('catchBallHighScore') || 0;
-let gameRunning = false; // Start with game paused to show instructions
+let lives = 3;
+let highScore = 0;
+let gameLoop;
+let isGameRunning = false;
 let playerPosition = 50; // percentage from left
 let playerWidth = 80; // in pixels
-let playerSpeed = 10; // percentage per move (increased from 5 for smoother movement)
-let baseBallSpeed = 0.5; // base pixels per frame (reduced for easier gameplay)
+let playerSpeed = 5; // percentage per move (increased from 5 for smoother movement)
+let baseBallSpeed = 2; // base pixels per frame (reduced for easier gameplay)
 let ballSpeedIncrement = 0.05; // increased from 0.02 for more noticeable level difficulty
-let spawnRate = 3000; // milliseconds (increased for easier start)
+let spawnRate = 1000; // milliseconds (increased for easier start)
 let spawnRateMin = 1000;
 let lastSpawnTime = 0;
-let gameLoop;
 let balls = [];
 let keysPressed = {};
 let isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -305,7 +305,7 @@ function updateComboDisplay() {
 
 // Update game state
 function update(timestamp) {
-    if (!gameRunning) return;
+    if (!isGameRunning) return;
     
     // Calculate delta time for smoother movement
     const deltaTime = timestamp - lastTime;
@@ -482,7 +482,7 @@ function playSound(type) {
 
 // Game over
 function gameOver() {
-    gameRunning = false;
+    isGameRunning = false;
     finalScoreElement.textContent = score;
     
     // Show new high score message if applicable
@@ -593,9 +593,9 @@ function addForestEffect() {
 function restartGame() {
     // Reset game variables
     score = 0;
-    lives = 20;
+    lives = 3;
     level = 1;
-    gameRunning = true;
+    isGameRunning = true;
     playerPosition = 50;
     consecutiveCatches = 0;
     scoreMultiplier = 1;
@@ -626,7 +626,7 @@ function restartGame() {
 
 // Show instructions again
 function showInstructions() {
-    gameRunning = false;
+    isGameRunning = false;
     instructionsScreen.classList.remove('hidden');
     cancelAnimationFrame(gameLoop);
 }
@@ -634,7 +634,7 @@ function showInstructions() {
 // Start the game after viewing instructions
 function startGame() {
     instructionsScreen.classList.add('hidden');
-    gameRunning = true;
+    isGameRunning = true;
     gameLoop = requestAnimationFrame(update);
 }
 
