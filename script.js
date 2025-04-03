@@ -224,8 +224,8 @@ function createBalloon() {
     const balloon = document.createElement('div');
     balloon.className = 'balloon';
     
-    // Increased chance for rainbow balloons (15% chance from level 2+)
-    const rainbowChance = level === 1 ? 0 : 0.15;
+    // Increased chance for rainbow balloons - now 15% chance regardless of level
+    const rainbowChance = 0.15; // 15% chance for rainbow balloons
     const isRainbow = Math.random() < rainbowChance;
     
     // Add variety of balloon colors
@@ -424,25 +424,15 @@ function update(timestamp) {
     const deltaTime = timestamp - lastTime || 16.7;
     lastTime = timestamp;
     
-    // Change level progression to 30, 60, 90 points
-    let newLevel;
-    if (score < 30) {
-        newLevel = 1;
-    } else if (score < 60) {
-        newLevel = 2;
-    } else if (score < 90) {
-        newLevel = 3;
-    } else {
-        newLevel = Math.floor((score - 90) / 30) + 4; // Level 4+ every 30 points
-    }
-    
+    // Check for level up based on score - now at 30, 60, 90, etc.
+    let newLevel = Math.floor(score / 30) + 1; // Level up every 30 points
     if (newLevel > level) {
         level = newLevel;
         // Display level up message
         showLevelUpMessage(level);
         
         // Make game harder by increasing spawn rate and ball speed
-        // Level 1: Very slow, Level 2: Medium, Level 3+: Progressively harder
+        // Level 1: Very slow, Level 2+: Progressively harder
         if (level === 2) {
             spawnRate = 1300; // Medium difficulty at level 2
             ballSpeed = 1.8;
@@ -616,17 +606,9 @@ function showLevelUpMessage(level) {
     const levelUpMsg = document.createElement('div');
     levelUpMsg.classList.add('level-up-message');
     
-    // Custom messages based on level
-    let message = '';
-    if (level === 2) {
-        message = 'Medium difficulty! More rainbow balloons!';
-    } else if (level === 3) {
-        message = 'Hard difficulty! Speed increased!';
-    } else if (level >= 4) {
-        message = 'Expert difficulty! Good luck!';
-    }
-    
-    levelUpMsg.innerHTML = `Level ${level}!<br><span style="font-size: 24px;">${message}</span>`;
+    // Show what score is needed for next level
+    const nextLevelScore = level * 30;
+    levelUpMsg.innerHTML = `Level ${level}!<br><span style="font-size: 24px;">Speed Increased!<br>Next level at ${nextLevelScore} points</span>`;
     
     gameArea.appendChild(levelUpMsg);
     
@@ -781,23 +763,14 @@ function makeBalloonsRainbow() {
         const originalClasses = balloon.className;
         const originalBackground = balloon.style.background;
         
-        // Skip if already rainbow
-        if (originalClasses.includes('rainbow-effect')) {
-            return;
-        }
-        
         // Add rainbow animation class
         balloon.classList.add('rainbow-effect');
         
         // Reset after 2 seconds
         setTimeout(() => {
-            // Only restore if balloon still exists
-            if (gameArea.contains(balloon)) {
-                balloon.classList.remove('rainbow-effect');
-                // Set back to original color class but keep balloon class
-                balloon.className = originalClasses;
-                balloon.style.background = originalBackground;
-            }
+            balloon.classList.remove('rainbow-effect');
+            balloon.className = originalClasses;
+            balloon.style.background = originalBackground;
         }, 2000);
     });
 }
