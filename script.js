@@ -101,6 +101,8 @@ function init() {
     
     // Pause functionality
     if (pauseBtn) {
+        // Initialize pause button with "PAUSE" text
+        pauseBtn.textContent = "II";
         pauseBtn.addEventListener('click', togglePause);
     }
     
@@ -196,6 +198,7 @@ function pauseGame() {
     isPaused = true;
     cancelAnimationFrame(gameLoop);
     pauseBtn.classList.add('paused');
+    pauseBtn.textContent = "▶"; // Play symbol
     pauseBtn.setAttribute('title', 'Resume Game');
     
     // Show simple pause message
@@ -212,10 +215,10 @@ function pauseGame() {
     pauseMessage.style.fontSize = '24px';
     pauseMessage.style.zIndex = '100';
     
-    // Add restart button directly in the pause message
+    // Add pause text and restart button
     pauseMessage.innerHTML = `
-        <div style="text-align: center; margin-bottom: 20px;">Game Paused</div>
-        <button id="restart-now-btn" style="display: block; margin: 0 auto; padding: 10px 20px; background: #F44336; border: none; color: white; border-radius: 5px; cursor: pointer;">Restart Game</button>
+        <div style="text-align: center; margin-bottom: 20px;">PAUSED</div>
+        <button id="restart-now-btn" style="display: block; margin: 0 auto; padding: 10px 20px; background: #F44336; border: none; color: white; border-radius: 5px; cursor: pointer;">RESTART</button>
     `;
     
     gameArea.appendChild(pauseMessage);
@@ -244,6 +247,7 @@ function resumeGame() {
     isPaused = false;
     lastTime = 0; // Reset time to avoid huge delta time after pause
     pauseBtn.classList.remove('paused');
+    pauseBtn.textContent = "II"; // Pause symbol
     pauseBtn.setAttribute('title', 'Pause Game');
     gameLoop = requestAnimationFrame(update);
 }
@@ -863,6 +867,7 @@ function startGame() {
     player.style.left = `${playerPosition}%`;
     isPaused = false;
     pauseBtn.classList.remove('paused');
+    pauseBtn.textContent = "II"; // Pause symbol
     pauseBtn.setAttribute('title', 'Pause Game');
     
     // Clear existing balloons

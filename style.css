@@ -1071,48 +1071,43 @@ body.theme-night .game-area {
 .pause-btn {
     position: absolute;
     top: 10px;
-    left: 10px;
-    width: 30px;
-    height: 30px;
-    background-color: rgba(0, 0, 0, 0.6);
-    border: 2px solid rgba(255, 255, 255, 0.7);
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    background-color: #555;
+    border: none;
     border-radius: 5px;
     cursor: pointer;
-    z-index: 50;
+    z-index: 20;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.3s ease;
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.2s;
 }
 
-.pause-btn::before, 
-.pause-btn::after {
-    content: '';
-    display: block;
-    width: 4px;
-    height: 16px;
-    background-color: white;
-    margin: 0 2px;
-    transition: all 0.3s ease;
+.pause-btn:hover {
+    background-color: #777;
 }
 
-/* Play Button (when paused) */
 .pause-btn.paused {
-    background-color: rgba(76, 175, 80, 0.8);  /* Green background when paused */
+    background-color: #4CAF50; /* Green when in paused state (showing play button) */
 }
 
-.pause-btn.paused::before {
-    width: 0;
-    height: 0;
-    border-style: solid;
-    border-width: 8px 0 8px 12px;
-    border-color: transparent transparent transparent white;
-    background-color: transparent;
-    margin-left: 4px;
+.pause-btn.paused:hover {
+    background-color: #66BB6A; /* Lighter green on hover */
 }
 
-.pause-btn.paused::after {
-    display: none;
+/* Responsive adjustments for pause button */
+@media screen and (max-width: 600px) {
+    .pause-btn {
+        width: 35px;
+        height: 35px;
+        font-size: 14px;
+    }
 }
 
 /* Pause Screen */
