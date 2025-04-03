@@ -6,12 +6,112 @@
 
 body {
     font-family: Arial, sans-serif;
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    background: linear-gradient(180deg, #87CEEB 0%, #4682B4 100%);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
     color: white;
+    overflow: hidden;
+    position: relative;
+}
+
+/* Sky and Sun */
+body::before {
+    content: '';
+    position: fixed;
+    top: 40px;
+    right: 40px;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, #FFD700 30%, #FF8C00 70%);
+    border-radius: 50%;
+    box-shadow: 0 0 40px 20px rgba(255, 215, 0, 0.7);
+    z-index: 1;
+}
+
+/* Birds flying animation */
+@keyframes flyBird {
+    0% { transform: translateX(-100px) translateY(0) scale(0.6); }
+    50% { transform: translateX(calc(50vw)) translateY(-30px) scale(0.8); }
+    100% { transform: translateX(calc(100vw + 100px)) translateY(0) scale(0.6); }
+}
+
+/* Bird styles */
+.bird {
+    position: fixed;
+    width: 30px;
+    height: 15px;
+    z-index: 2;
+}
+
+.bird::before,
+.bird::after {
+    content: '';
+    position: absolute;
+    width: 15px;
+    height: 8px;
+    background: #000;
+    border-radius: 50% 50% 0 0;
+}
+
+.bird::before {
+    left: 0;
+    animation: wingFlap 0.5s infinite alternate;
+}
+
+.bird::after {
+    right: 0;
+    animation: wingFlap 0.5s infinite alternate-reverse;
+}
+
+@keyframes wingFlap {
+    0% { transform: translateY(0); }
+    100% { transform: translateY(-4px); }
+}
+
+/* River animation at the bottom */
+@keyframes flowRiver {
+    0% { background-position: 0 0; }
+    100% { background-position: 100% 0; }
+}
+
+body::after {
+    content: '';
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 150px;
+    background: linear-gradient(to bottom, rgba(30, 144, 255, 0.6), rgba(0, 0, 128, 0.8));
+    background-image: 
+        repeating-linear-gradient(
+            45deg,
+            rgba(255, 255, 255, 0.1),
+            rgba(255, 255, 255, 0.1) 15px,
+            transparent 15px,
+            transparent 30px
+        );
+    animation: flowRiver 10s linear infinite;
+    z-index: 1;
+}
+
+/* Forest at the horizon */
+.forest-bg {
+    position: fixed;
+    bottom: 150px;
+    left: 0;
+    right: 0;
+    height: 150px;
+    background-image: 
+        repeating-radial-gradient(
+            circle at 50% 0,
+            #0a5c36 0%,
+            #0a5c36 5px,
+            #0e7a48 5px,
+            #0e7a48 10px
+        );
+    z-index: 1;
 }
 
 .game-container {
@@ -20,16 +120,16 @@ body {
     border-radius: 15px;
     box-shadow: 0 0 20px rgba(0, 0, 0, 0.3);
     text-align: center;
-    backdrop-filter: blur(10px);
+    backdrop-filter: blur(5px);
     border: 1px solid rgba(255, 255, 255, 0.2);
-    width: 100%;
-    max-width: 500px;
+    position: relative;
+    z-index: 10;
 }
 
 h1 {
     color: #fff;
     margin-bottom: 20px;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .game-stats {
@@ -38,13 +138,13 @@ h1 {
     margin-bottom: 20px;
     font-size: 1.2em;
     color: #fff;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
 }
 
 .game-area {
-    width: 100%;
-    height: 400px;
-    background: linear-gradient(to bottom, #87CEEB, #4682B4);
+    width: 400px;
+    height: 500px;
+    background: rgba(255, 255, 255, 0.2);
     position: relative;
     margin: 0 auto;
     overflow: hidden;
@@ -53,24 +153,36 @@ h1 {
 }
 
 .player {
-    width: 100px;
-    height: 50px;
-    background: linear-gradient(to bottom, #4CAF50, #2E7D32);
+    width: 80px;
+    height: 40px;
+    background: #8B4513;
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: 0 0 50px 50px;
+    border-radius: 0 0 40px 40px;
     transition: left 0.1s ease;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
+/* Bowl shape */
+.player::before {
+    content: '';
+    position: absolute;
+    top: -10px;
+    left: 10px;
+    right: 10px;
+    height: 30px;
+    background: #A0522D;
+    border-radius: 50% 50% 0 0;
+}
+
 .balloon {
-    width: 40px;
-    height: 50px;
+    width: 30px;
+    height: 40px;
     background: radial-gradient(circle at 30% 30%, #ff9999, #ff0000);
     position: absolute;
-    top: -50px;
+    top: -40px;
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
@@ -78,7 +190,7 @@ h1 {
 .balloon::after {
     content: '';
     position: absolute;
-    bottom: -8px;
+    bottom: -10px;
     left: 50%;
     transform: translateX(-50%);
     width: 2px;
@@ -129,43 +241,73 @@ h1 {
     align-items: center;
     color: white;
     border-radius: 10px;
+    z-index: 100;
 }
 
 .game-over.hidden {
     display: none;
 }
 
-/* Start Screen */
-.start-screen {
+.high-score-message {
+    color: #FFD700;
+    font-size: 24px;
+    margin: 10px 0;
+    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+}
+
+.high-score-message.hidden {
+    display: none;
+}
+
+/* Instructions Screen */
+.instructions-screen {
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.9);
+    background: rgba(0, 0, 0, 0.85);
     display: flex;
-    flex-direction: column;
     justify-content: center;
     align-items: center;
-    color: white;
     border-radius: 10px;
-    padding: 20px;
-    z-index: 1000;
+    z-index: 100;
 }
 
-.instructions {
+.instructions-content {
+    background: rgba(255, 255, 255, 0.1);
+    padding: 30px;
+    border-radius: 15px;
+    max-width: 80%;
+    backdrop-filter: blur(10px);
+}
+
+.instruction-items {
     margin: 20px 0;
+}
+
+.instruction-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
     text-align: left;
 }
 
-.instructions p {
-    margin: 10px 0;
-    font-size: 1.1em;
+.instruction-icon {
+    font-size: 24px;
+    margin-right: 15px;
+    width: 30px;
+    text-align: center;
 }
 
-.btn, button {
-    padding: 15px 30px;
-    font-size: 1.2em;
+.instruction-text {
+    color: white;
+    font-size: 16px;
+}
+
+button {
+    padding: 12px 25px;
+    font-size: 1.1em;
     background: linear-gradient(to bottom, #4CAF50, #2E7D32);
     color: white;
     border: none;
@@ -173,22 +315,15 @@ h1 {
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
-    margin: 15px 0;
 }
 
-.btn:hover, button:hover {
+button:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
-    background: linear-gradient(to bottom, #5CBA60, #3E8D42);
 }
 
-.btn:active, button:active {
+button:active {
     transform: translateY(1px);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-.hidden {
-    display: none !important;
 }
 
 /* Mobile Responsive */
@@ -201,6 +336,7 @@ h1 {
     }
     
     .game-area {
+        width: 100%;
         height: calc(100vh - 200px);
     }
     
@@ -208,7 +344,7 @@ h1 {
         display: flex;
     }
     
-    .instructions p {
-        font-size: 1em;
+    .instruction-text {
+        font-size: 14px;
     }
 } 
