@@ -506,112 +506,40 @@ button:active {
     }
 }
 
-/* Rainbow balloon animation */
-@keyframes rainbowPulse {
-    0% { filter: hue-rotate(0deg) brightness(1.1); }
-    25% { filter: hue-rotate(90deg) brightness(1.2); }
-    50% { filter: hue-rotate(180deg) brightness(1.3); }
-    75% { filter: hue-rotate(270deg) brightness(1.2); }
-    100% { filter: hue-rotate(360deg) brightness(1.1); }
-}
-
-.balloon.rainbow {
-    animation: rainbowPulse 0.5s linear infinite;
-    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-}
-
-/* Different balloon colors */
-.balloon.red { background: radial-gradient(circle at 30% 30%, #ff9999, #ff0000); }
-.balloon.blue { background: radial-gradient(circle at 30% 30%, #99ccff, #0066ff); }
-.balloon.green { background: radial-gradient(circle at 30% 30%, #99ff99, #00cc00); }
-.balloon.yellow { background: radial-gradient(circle at 30% 30%, #ffffcc, #ffcc00); }
-.balloon.purple { background: radial-gradient(circle at 30% 30%, #cc99ff, #9900cc); }
-.balloon.orange { background: radial-gradient(circle at 30% 30%, #ffcc99, #ff6600); }
-.balloon.pink { background: radial-gradient(circle at 30% 30%, #ffccff, #ff66ff); }
-
-/* Confetti animation for level up */
-@keyframes confettiDrop {
-    0% {
-        transform: translateY(0) translateX(0) rotate(0deg);
-        opacity: 1;
-    }
-    100% {
-        transform: translateY(var(--distance)) translateX(calc(tan(var(--angle)) * var(--distance))) rotate(360deg);
-        opacity: 0;
-    }
-}
-
-.confetti {
-    position: absolute;
-    z-index: 100;
-    pointer-events: none;
-}
-
-.confetti.circle {
-    border-radius: 50%;
-}
-
-.confetti.square {
-    border-radius: 0;
-}
-
-.confetti.triangle {
-    width: 0 !important;
-    height: 0 !important;
-    border-left: 8px solid transparent !important;
-    border-right: 8px solid transparent !important;
-    border-bottom: 15px solid currentColor !important;
-    background: transparent !important;
-}
-
-/* Enhanced score popup animation */
+/* Score popup */
 .score-popup {
     position: absolute;
     color: white;
     font-size: 16px;
     font-weight: bold;
-    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5), 0 0 5px rgba(255, 255, 255, 0.5);
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
     animation: scorePopup 1s ease-out forwards;
     z-index: 10;
-}
-
-@keyframes scorePopup {
-    0% { 
-        transform: translateY(0) scale(0.5); 
-        opacity: 0; 
-    }
-    20% {
-        transform: translateY(-10px) scale(1.2);
-        opacity: 1;
-    }
-    100% { 
-        transform: translateY(-30px) scale(1);
-        opacity: 0;
-    }
 }
 
 .score-popup[data-value="2"] {
     color: #4CAF50;
     font-size: 18px;
-    text-shadow: 0 0 5px rgba(76, 175, 80, 0.7);
 }
 
 .score-popup[data-value="3"] {
     color: #2196F3;
     font-size: 20px;
-    text-shadow: 0 0 7px rgba(33, 150, 243, 0.7);
 }
 
 .score-popup[data-value="4"] {
     color: #9C27B0;
     font-size: 22px;
-    text-shadow: 0 0 10px rgba(156, 39, 176, 0.7);
 }
 
 .score-popup[data-value="5"] {
     color: #F44336;
     font-size: 24px;
-    text-shadow: 0 0 12px rgba(244, 67, 54, 0.7);
+}
+
+@keyframes scorePopup {
+    0% { transform: translateY(0); opacity: 1; }
+    100% { transform: translateY(-30px); opacity: 0; }
 }
 
 /* Side Instructions */
@@ -707,4 +635,129 @@ button:active {
 .player, .balloon {
     position: absolute;
     z-index: 5;
+}
+
+/* Balloon colors */
+.balloon.red {
+    background: radial-gradient(circle at 30% 30%, #ff9999, #ff0000);
+}
+
+.balloon.blue {
+    background: radial-gradient(circle at 30% 30%, #99c2ff, #0066ff);
+}
+
+.balloon.green {
+    background: radial-gradient(circle at 30% 30%, #99ffa2, #00cc00);
+}
+
+.balloon.purple {
+    background: radial-gradient(circle at 30% 30%, #d299ff, #9900cc);
+}
+
+.balloon.orange {
+    background: radial-gradient(circle at 30% 30%, #ffcc99, #ff6600);
+}
+
+.balloon.pink {
+    background: radial-gradient(circle at 30% 30%, #ffb8e6, #ff3399);
+}
+
+.balloon.yellow {
+    background: radial-gradient(circle at 30% 30%, #fff099, #ffcc00);
+}
+
+/* Rainbow balloon effect */
+@keyframes rainbowEffect {
+    0% { background: radial-gradient(circle at 30% 30%, #ff9999, #ff0000); }
+    14% { background: radial-gradient(circle at 30% 30%, #ffcc99, #ff6600); }
+    28% { background: radial-gradient(circle at 30% 30%, #fff099, #ffcc00); }
+    42% { background: radial-gradient(circle at 30% 30%, #99ffa2, #00cc00); }
+    57% { background: radial-gradient(circle at 30% 30%, #99c2ff, #0066ff); }
+    71% { background: radial-gradient(circle at 30% 30%, #d299ff, #9900cc); }
+    85% { background: radial-gradient(circle at 30% 30%, #ffb8e6, #ff3399); }
+    100% { background: radial-gradient(circle at 30% 30%, #ff9999, #ff0000); }
+}
+
+.balloon.rainbow-effect {
+    animation: rainbowEffect 1s linear infinite !important;
+    box-shadow: 0 0 15px rgba(255, 255, 255, 0.8) !important;
+}
+
+/* Score pop animation */
+@keyframes scorePop {
+    0% { transform: scale(0.5) translateY(0); opacity: 0; }
+    20% { transform: scale(1.2) translateY(-5px); opacity: 1; }
+    80% { transform: scale(1) translateY(-20px); opacity: 1; }
+    100% { transform: scale(0.8) translateY(-30px); opacity: 0; }
+}
+
+.score-pop {
+    position: absolute;
+    font-size: 16px;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 5px rgba(0, 0, 0, 0.5);
+    z-index: 50;
+    animation: scorePop 1s ease-out forwards;
+    pointer-events: none;
+}
+
+/* Confetti animation */
+.confetti-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 40;
+    overflow: hidden;
+}
+
+.confetti {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    top: -10px;
+    background-color: #f44336;
+    transform-origin: center;
+    opacity: 0.8;
+    animation: confettiFall 3s ease-in forwards;
+}
+
+@keyframes confettiFall {
+    0% { 
+        transform: translateY(0) rotate(0deg); 
+        opacity: 0.8;
+    }
+    50% {
+        opacity: 0.8;
+    }
+    100% { 
+        transform: translateY(500px) rotate(720deg); 
+        opacity: 0;
+    }
+}
+
+/* Mobile optimizations */
+@media (max-width: 600px) {
+    /* Make buttons larger and more visible on mobile */
+    .control-btn {
+        width: 80px;
+        height: 80px;
+        font-size: 32px;
+        opacity: 0.8;
+    }
+    
+    /* Prevent buttons from being too close to the edge */
+    .mobile-controls {
+        padding: 0 10px 10px 10px;
+        margin-top: 10px;
+    }
+    
+    /* Make confetti work better on smaller screens */
+    .confetti {
+        width: 8px;
+        height: 8px;
+    }
 } 

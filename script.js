@@ -99,10 +99,23 @@ function init() {
     // Mobile controls
     if (isMobile && leftControl && rightControl) {
         document.querySelector('.mobile-controls').style.display = 'flex';
-        leftControl.addEventListener('touchstart', () => movePlayer(-playerSpeed));
-        rightControl.addEventListener('touchstart', () => movePlayer(playerSpeed));
-        leftControl.addEventListener('mousedown', () => movePlayer(-playerSpeed));
-        rightControl.addEventListener('mousedown', () => movePlayer(playerSpeed));
+        
+        // Touch and hold controls for smoother movement
+        leftControl.addEventListener('touchstart', () => startMovePlayer('left'));
+        leftControl.addEventListener('touchend', () => stopMovePlayer('left'));
+        
+        rightControl.addEventListener('touchstart', () => startMovePlayer('right'));
+        rightControl.addEventListener('touchend', () => stopMovePlayer('right'));
+        
+        // Mouse controls (for testing on desktop)
+        leftControl.addEventListener('mousedown', () => startMovePlayer('left'));
+        leftControl.addEventListener('mouseup', () => stopMovePlayer('left'));
+        
+        rightControl.addEventListener('mousedown', () => startMovePlayer('right'));
+        rightControl.addEventListener('mouseup', () => stopMovePlayer('right'));
+        
+        // Direct touch/drag on game area for more intuitive control
+        gameArea.addEventListener('touchmove', handleTouchMove, { passive: false });
     }
     
     // Add side instructions toggle event listeners
@@ -146,6 +159,43 @@ function init() {
     console.log("Game initialized successfully!");
 }
 
+// Mobile player movement
+let movingLeft = false;
+let movingRight = false;
+
+function startMovePlayer(direction) {
+    if (direction === 'left') {
+        movingLeft = true;
+    } else if (direction === 'right') {
+        movingRight = true;
+    }
+}
+
+function stopMovePlayer(direction) {
+    if (direction === 'left') {
+        movingLeft = false;
+    } else if (direction === 'right') {
+        movingRight = false;
+    }
+}
+
+// Handle touch movement directly on game area
+function handleTouchMove(e) {
+    e.preventDefault();
+    if (!isGameRunning) return;
+    
+    const touch = e.touches[0];
+    const gameRect = gameArea.getBoundingClientRect();
+    const touchX = touch.clientX - gameRect.left;
+    
+    // Convert touch position to percentage
+    const newPosition = (touchX / gameWidth) * 100;
+    
+    // Clamp the position
+    playerPosition = Math.max(0, Math.min(100, newPosition));
+    player.style.left = `${playerPosition}%`;
+}
+
 // Update game dimensions
 function updateDimensions() {
     gameWidth = gameArea.offsetWidth;
@@ -174,46 +224,46 @@ function createBalloon() {
     const balloon = document.createElement('div');
     balloon.className = 'balloon';
     
-    // Random balloon color
+    // Add variety of balloon colors
     const colors = [
-        'red', 'blue', 'green', 'yellow', 'purple', 'orange', 'pink'
+        'red', 'blue', 'green', 'purple', 'orange', 'pink', 'yellow'
     ];
-    const color = colors[Math.floor(Math.random() * colors.length)];
-    balloon.classList.add(color);
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    balloon.classList.add(randomColor);
     
-    // Set gradient based on color
+    // Set balloon gradient based on color
     let gradientStart, gradientEnd;
-    switch(color) {
-        case 'red': 
-            gradientStart = '#ff9999'; 
-            gradientEnd = '#ff0000'; 
+    switch(randomColor) {
+        case 'red':
+            gradientStart = '#ff9999';
+            gradientEnd = '#ff0000';
             break;
-        case 'blue': 
-            gradientStart = '#99ccff'; 
-            gradientEnd = '#0066ff'; 
+        case 'blue':
+            gradientStart = '#99c2ff';
+            gradientEnd = '#0066ff';
             break;
-        case 'green': 
-            gradientStart = '#99ff99'; 
-            gradientEnd = '#00cc00'; 
+        case 'green':
+            gradientStart = '#99ffa2';
+            gradientEnd = '#00cc00';
             break;
-        case 'yellow': 
-            gradientStart = '#ffffcc'; 
-            gradientEnd = '#ffcc00'; 
+        case 'purple':
+            gradientStart = '#d299ff';
+            gradientEnd = '#9900cc';
             break;
-        case 'purple': 
-            gradientStart = '#cc99ff'; 
-            gradientEnd = '#9900cc'; 
+        case 'orange':
+            gradientStart = '#ffcc99';
+            gradientEnd = '#ff6600';
             break;
-        case 'orange': 
-            gradientStart = '#ffcc99'; 
-            gradientEnd = '#ff6600'; 
+        case 'pink':
+            gradientStart = '#ffb8e6';
+            gradientEnd = '#ff3399';
             break;
-        case 'pink': 
-            gradientStart = '#ffccff'; 
-            gradientEnd = '#ff66ff'; 
+        case 'yellow':
+            gradientStart = '#fff099';
+            gradientEnd = '#ffcc00';
             break;
-        default: 
-            gradientStart = '#ff9999'; 
+        default:
+            gradientStart = '#ff9999';
             gradientEnd = '#ff0000';
     }
     
@@ -225,13 +275,11 @@ function createBalloon() {
     
     gameArea.appendChild(balloon);
     
-    // Add to game balls array with color information
     balls.push({
         element: balloon,
         y: -40,
-        speed: ballSpeed * (level > 3 ? (1 + (level - 3) * 0.1) : 1), // Increase speed with level
-        color: color,
-        isRainbow: false
+        speed: ballSpeed * (level > 1 ? 1 + (level - 1) * 0.1 : 1), // Increase speed with level
+        color: randomColor
     });
 }
 
@@ -240,13 +288,17 @@ function createCatchEffect(x, y, color) {
     const effect = document.createElement('div');
     effect.classList.add('catch-effect');
     
-    // Get balloon color for the effect
-    let effectColor = '#ff0000'; // default red
-    if (color === 'blue') effectColor = '#0066ff';
-    if (color === 'green') effectColor = '#00cc00';
-    if (color === 'yellow') effectColor = '#ffcc00';
-    if (color === 'purple') effectColor = '#9900cc';
-    if (color === 'orange') effectColor = '#ff6600';
+    // Get color for the effect based on balloon color
+    let effectColor;
+    switch(color) {
+        case 'blue': effectColor = '#0066ff'; break;
+        case 'green': effectColor = '#00cc00'; break;
+        case 'yellow': effectColor = '#ffcc00'; break;
+        case 'purple': effectColor = '#9900cc'; break;
+        case 'orange': effectColor = '#ff6600'; break;
+        case 'pink': effectColor = '#ff3399'; break;
+        case 'red': default: effectColor = '#ff0000'; break;
+    }
     
     effect.style.backgroundColor = effectColor;
     effect.style.left = `${x}px`;
@@ -347,23 +399,24 @@ function update(timestamp) {
     lastTime = timestamp;
     
     // Check for level up based on score
-    let newLevel = Math.floor(score / 20) + 1;
+    let newLevel = Math.floor(score / 10) + 1; // Level up every 10 points
     if (newLevel > level) {
         level = newLevel;
         // Display level up message
         showLevelUpMessage(level);
         
+        // Make game harder by increasing spawn rate and ball speed
+        spawnRate = Math.max(spawnRateMin, 1500 - (level - 1) * 100);
+        ballSpeed = 1.5 + (level - 1) * 0.2;
+        
+        // Add rainbow effect to all balloons
+        makeBalloonsRainbow();
+        
         // Add forest animation effect when leveling up
         addForestEffect();
         
-        // Make all current balloons rainbow for 2 seconds
-        makeBalloonsRainbow();
-        
-        // Create party popper effect
-        createPartyPopperEffect();
-        
-        // Adjust difficulty based on level
-        adjustDifficulty(level);
+        // Add party popper animation
+        showPartyPopper();
     }
     
     // Reset combo if too much time has passed since last catch
@@ -375,15 +428,22 @@ function update(timestamp) {
     
     // Handle keyboard movement
     if (keysPressed['ArrowLeft']) {
-        movePlayer(-playerSpeed);
+        movePlayer(-playerSpeed * (deltaTime / 16.67));
     }
     if (keysPressed['ArrowRight']) {
-        movePlayer(playerSpeed);
+        movePlayer(playerSpeed * (deltaTime / 16.67));
     }
     
-    // Spawn new balloons - faster spawn rate at higher levels
-    const currentSpawnRate = spawnRate - ((level - 1) * 100);
-    if (timestamp - lastSpawnTime > currentSpawnRate) {
+    // Handle touch/hold movement for mobile
+    if (movingLeft) {
+        movePlayer(-playerSpeed * (deltaTime / 16.67));
+    }
+    if (movingRight) {
+        movePlayer(playerSpeed * (deltaTime / 16.67));
+    }
+    
+    // Spawn new balloons
+    if (timestamp - lastSpawnTime > spawnRate) {
         createBalloon();
         lastSpawnTime = timestamp;
     }
@@ -391,12 +451,6 @@ function update(timestamp) {
     // Update balloons
     for (let i = balls.length - 1; i >= 0; i--) {
         const ball = balls[i];
-        
-        // Update rainbow effect if active
-        if (ball.isRainbow) {
-            const hue = (timestamp / 10) % 360;
-            ball.element.style.background = `radial-gradient(circle at 30% 30%, hsl(${hue}, 100%, 80%), hsl(${hue}, 100%, 50%))`;
-        }
         
         // Move ball down with delta time adjustment
         ball.y += ball.speed * (deltaTime / 16.67); // normalize to ~60fps
@@ -415,18 +469,9 @@ function update(timestamp) {
         // Collision detection with the bowl
         if (ballBottom >= playerTop && ballBottom <= playerTop + 40) {
             if (ballCenter >= playerLeft && ballCenter <= playerRight) {
-                // Calculate points - more points for rainbow balloons
-                let points = ball.isRainbow ? 2 : 1;
-                
                 // Balloon caught
-                score += points;
+                score++;
                 scoreElement.textContent = score;
-                
-                // Show score animation
-                showScoreIncrease(ballCenter, playerTop - 20, points);
-                
-                // Create catch effect with balloon color
-                createCatchEffect(ballCenter, playerTop, ball.color);
                 
                 // Update high score if needed
                 if (score > highScore) {
@@ -434,6 +479,20 @@ function update(timestamp) {
                     highScoreElement.textContent = highScore;
                     localStorage.setItem('catchBalloonHighScore', highScore);
                 }
+                
+                // Track consecutive catches and update multiplier
+                consecutiveCatches++;
+                lastCatchTime = timestamp;
+                
+                // Update multiplier for consecutive catches
+                scoreMultiplier = Math.min(5, 1 + Math.floor(consecutiveCatches / 3));
+                updateComboDisplay();
+                
+                // Create catch effect with balloon's color
+                createCatchEffect(ballCenter, playerTop, ball.color);
+                
+                // Show score pop-up animation
+                showScorePopAnimation(ballCenter, playerTop - 20);
                 
                 // Remove balloon
                 ball.element.remove();
@@ -625,6 +684,8 @@ function startGame() {
     lives = 10;
     balls = [];
     level = 1;
+    spawnRate = 1500; // Reset spawn rate
+    ballSpeed = 1.5; // Reset ball speed
     scoreElement.textContent = score;
     livesElement.textContent = lives;
     playerPosition = 50;
@@ -653,134 +714,102 @@ function closeSideInstructionsPanel() {
     sideInstructions.classList.remove('show');
 }
 
-// Make all balloons rainbow for 2 seconds
+// Apply rainbow effect to all balloons for a short time
 function makeBalloonsRainbow() {
-    for (let ball of balls) {
-        ball.isRainbow = true;
-        ball.element.classList.add('rainbow');
+    const allBalloons = document.querySelectorAll('.balloon');
+    
+    allBalloons.forEach(balloon => {
+        // Save original classes for restoring later
+        const originalClasses = balloon.className;
+        const originalBackground = balloon.style.background;
+        
+        // Add rainbow animation class
+        balloon.classList.add('rainbow-effect');
+        
+        // Reset after 2 seconds
+        setTimeout(() => {
+            balloon.classList.remove('rainbow-effect');
+            balloon.className = originalClasses;
+            balloon.style.background = originalBackground;
+        }, 2000);
+    });
+}
+
+// Show score pop animation
+function showScorePopAnimation(x, y) {
+    const popup = document.createElement('div');
+    popup.className = 'score-pop';
+    popup.textContent = '+1';
+    
+    // Position popup
+    popup.style.left = `${x}px`;
+    popup.style.top = `${y}px`;
+    
+    // Apply higher value for combo
+    if (scoreMultiplier > 1) {
+        popup.textContent = `+${scoreMultiplier}`;
+        popup.style.fontSize = `${16 + scoreMultiplier * 2}px`;
+        popup.style.color = getComboColor(scoreMultiplier);
     }
     
-    // Reset after 2 seconds
+    // Add to game area
+    gameArea.appendChild(popup);
+    
+    // Remove after animation completes
     setTimeout(() => {
-        for (let ball of balls) {
-            if (ball.isRainbow) {
-                ball.isRainbow = false;
-                ball.element.classList.remove('rainbow');
-                
-                // Restore original color
-                let gradientStart, gradientEnd;
-                switch(ball.color) {
-                    case 'red': 
-                        gradientStart = '#ff9999'; 
-                        gradientEnd = '#ff0000'; 
-                        break;
-                    case 'blue': 
-                        gradientStart = '#99ccff'; 
-                        gradientEnd = '#0066ff'; 
-                        break;
-                    case 'green': 
-                        gradientStart = '#99ff99'; 
-                        gradientEnd = '#00cc00'; 
-                        break;
-                    case 'yellow': 
-                        gradientStart = '#ffffcc'; 
-                        gradientEnd = '#ffcc00'; 
-                        break;
-                    case 'purple': 
-                        gradientStart = '#cc99ff'; 
-                        gradientEnd = '#9900cc'; 
-                        break;
-                    case 'orange': 
-                        gradientStart = '#ffcc99'; 
-                        gradientEnd = '#ff6600'; 
-                        break;
-                    case 'pink': 
-                        gradientStart = '#ffccff'; 
-                        gradientEnd = '#ff66ff'; 
-                        break;
-                    default: 
-                        gradientStart = '#ff9999'; 
-                        gradientEnd = '#ff0000';
-                }
-                ball.element.style.background = `radial-gradient(circle at 30% 30%, ${gradientStart}, ${gradientEnd})`;
-            }
+        if (gameArea.contains(popup)) {
+            gameArea.removeChild(popup);
         }
-    }, 2000);
+    }, 1000);
 }
 
-// Adjust game difficulty based on level
-function adjustDifficulty(level) {
-    // Increase balloon fall speed
-    ballSpeed = 1.5 + (level - 1) * 0.2;
-    
-    // Decrease spawn rate (faster spawning) but with a minimum limit
-    spawnRate = Math.max(spawnRateMin, 1500 - (level - 1) * 100);
-    
-    // Make player movement slightly faster on higher levels for better control
-    playerSpeed = 5 + (level - 1) * 0.3;
-    
-    console.log(`Level ${level}: Speed ${ballSpeed}, Spawn Rate ${spawnRate}, Player Speed ${playerSpeed}`);
+// Get color based on combo multiplier
+function getComboColor(multiplier) {
+    switch(multiplier) {
+        case 2: return '#4CAF50'; // green
+        case 3: return '#2196F3'; // blue
+        case 4: return '#9C27B0'; // purple
+        case 5: return '#F44336'; // red
+        default: return 'white';
+    }
 }
 
-// Create party popper effect for level up
-function createPartyPopperEffect() {
-    // Create confetti-like particles
+// Show party popper animation on level up
+function showPartyPopper() {
+    // Create confetti container
+    const confettiContainer = document.createElement('div');
+    confettiContainer.className = 'confetti-container';
+    gameArea.appendChild(confettiContainer);
+    
+    // Add multiple confetti pieces
+    const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50', '#8BC34A', '#FFEB3B', '#FFC107', '#FF9800', '#FF5722'];
+    
     for (let i = 0; i < 100; i++) {
         const confetti = document.createElement('div');
-        confetti.classList.add('confetti');
-        
-        // Random position from center top
-        confetti.style.left = `${gameWidth / 2}px`;
-        confetti.style.top = '0px';
-        
-        // Random confetti color
-        const colors = ['#f44336', '#e91e63', '#9c27b0', '#673ab7', '#3f51b5', 
-                         '#2196f3', '#03a9f4', '#00bcd4', '#009688', '#4CAF50',
-                         '#8BC34A', '#CDDC39', '#FFEB3B', '#FFC107', '#FF9800',
-                         '#FF5722'];
+        confetti.className = 'confetti';
         confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.left = `${Math.random() * 100}%`;
+        confetti.style.animationDelay = `${Math.random() * 2}s`;
+        confetti.style.animationDuration = `${2 + Math.random() * 2}s`;
         
-        // Random size
-        const size = 5 + Math.random() * 10;
-        confetti.style.width = `${size}px`;
-        confetti.style.height = `${size}px`;
-        
-        // Random rotation
-        confetti.style.transform = `rotate(${Math.random() * 360}deg)`;
-        
-        // Random shape
-        const shapes = ['circle', 'square', 'triangle'];
-        const shape = shapes[Math.floor(Math.random() * shapes.length)];
-        confetti.classList.add(shape);
-        
-        // Set animation properties
-        const duration = 1 + Math.random() * 2;
-        const delay = Math.random() * 0.5;
-        const angle = -30 + Math.random() * 60; // -30 to 30 degrees
-        const distance = 50 + Math.random() * 200;
-        
-        confetti.style.animation = `confettiDrop ${duration}s ease-out ${delay}s forwards`;
-        confetti.style.setProperty('--angle', angle + 'deg');
-        confetti.style.setProperty('--distance', distance + 'px');
-        
-        gameArea.appendChild(confetti);
-        
-        // Remove after animation
-        setTimeout(() => {
-            if (gameArea.contains(confetti)) {
-                gameArea.removeChild(confetti);
-            }
-        }, (duration + delay) * 1000);
+        confettiContainer.appendChild(confetti);
     }
     
     // Play party sound
     try {
         const partySound = new Audio('sounds/party.mp3');
-        partySound.volume = 0.6;
+        partySound.volume = 0.5;
         partySound.play();
     } catch (e) {
-        console.log("Error playing party sound:", e);
+        console.log("Couldn't play party sound:", e);
     }
+    
+    // Remove confetti after animation
+    setTimeout(() => {
+        if (gameArea.contains(confettiContainer)) {
+            gameArea.removeChild(confettiContainer);
+        }
+    }, 4000);
 }
 
 // Start the game when the page loads
