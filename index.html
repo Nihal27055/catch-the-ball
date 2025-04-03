@@ -11,8 +11,7 @@
         <h1>Catch the Balloon</h1>
         <div class="game-stats">
             <div>Score: <span id="score">0</span></div>
-            <div>Lives: <span id="lives">3</span></div>
-            <div>High Score: <span id="high-score">0</span></div>
+            <div>Lives: <span id="lives">10</span></div>
         </div>
         <div id="game-area" class="game-area">
             <div id="player" class="player"></div>
@@ -27,35 +26,19 @@
         <!-- Game Over Screen -->
         <div id="game-over" class="game-over hidden">
             <h2>Game Over</h2>
-            <div id="high-score-message" class="high-score-message hidden">New High Score!</div>
             <p>Your score: <span id="final-score">0</span></p>
             <button id="restart-btn" class="btn">Play Again</button>
         </div>
         
-        <!-- Instructions Screen -->
-        <div id="instructions-screen" class="instructions-screen">
-            <div class="instructions-content">
-                <h2>How to Play</h2>
-                <div class="instruction-items">
-                    <div class="instruction-item">
-                        <div class="instruction-icon">⌨️</div>
-                        <div class="instruction-text">Use the <strong>LEFT</strong> and <strong>RIGHT</strong> arrow keys to move</div>
-                    </div>
-                    <div class="instruction-item">
-                        <div class="instruction-icon">📱</div>
-                        <div class="instruction-text">On mobile, use the buttons at the bottom of the screen</div>
-                    </div>
-                    <div class="instruction-item">
-                        <div class="instruction-icon">🎯</div>
-                        <div class="instruction-text">Catch the falling balloons with the bowl</div>
-                    </div>
-                    <div class="instruction-item">
-                        <div class="instruction-icon">❤️</div>
-                        <div class="instruction-text">You have 3 lives - don't let balloons hit the bottom!</div>
-                    </div>
-                </div>
-                <button id="start-game-btn" class="start-btn">Start Game</button>
+        <!-- Start Screen -->
+        <div id="start-screen" class="start-screen">
+            <h2>Welcome to Catch the Balloon!</h2>
+            <div class="instructions">
+                <p>Use arrow keys or buttons to move the bowl</p>
+                <p>Catch balloons to score points</p>
+                <p>You have 10 lives</p>
             </div>
+            <button id="start-btn" class="btn">Start Game</button>
         </div>
     </div>
     <script src="script.js"></script>

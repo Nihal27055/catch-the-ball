@@ -22,6 +22,8 @@ body {
     text-align: center;
     backdrop-filter: blur(10px);
     border: 1px solid rgba(255, 255, 255, 0.2);
+    width: 100%;
+    max-width: 500px;
 }
 
 h1 {
@@ -40,8 +42,8 @@ h1 {
 }
 
 .game-area {
-    width: 400px;
-    height: 500px;
+    width: 100%;
+    height: 400px;
     background: linear-gradient(to bottom, #87CEEB, #4682B4);
     position: relative;
     margin: 0 auto;
@@ -51,24 +53,24 @@ h1 {
 }
 
 .player {
-    width: 80px;
-    height: 40px;
+    width: 100px;
+    height: 50px;
     background: linear-gradient(to bottom, #4CAF50, #2E7D32);
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: 0 0 40px 40px;
+    border-radius: 0 0 50px 50px;
     transition: left 0.1s ease;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
 }
 
 .balloon {
-    width: 30px;
-    height: 40px;
+    width: 40px;
+    height: 50px;
     background: radial-gradient(circle at 30% 30%, #ff9999, #ff0000);
     position: absolute;
-    top: -40px;
+    top: -50px;
     border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
@@ -80,7 +82,7 @@ h1 {
     left: 50%;
     transform: translateX(-50%);
     width: 2px;
-    height: 10px;
+    height: 15px;
     background-color: #555;
 }
 
@@ -133,19 +135,8 @@ h1 {
     display: none;
 }
 
-.high-score-message {
-    color: #FFD700;
-    font-size: 24px;
-    margin: 10px 0;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
-}
-
-.high-score-message.hidden {
-    display: none;
-}
-
-/* Instructions Screen */
-.instructions-screen {
+/* Start Screen */
+.start-screen {
     position: absolute;
     top: 0;
     left: 0;
@@ -153,40 +144,22 @@ h1 {
     bottom: 0;
     background: rgba(0, 0, 0, 0.9);
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
+    color: white;
     border-radius: 10px;
+    padding: 20px;
 }
 
-.instructions-content {
-    background: rgba(255, 255, 255, 0.1);
-    padding: 30px;
-    border-radius: 15px;
-    max-width: 80%;
-    backdrop-filter: blur(10px);
-}
-
-.instruction-items {
+.instructions {
     margin: 20px 0;
-}
-
-.instruction-item {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
     text-align: left;
 }
 
-.instruction-icon {
-    font-size: 24px;
-    margin-right: 15px;
-    width: 30px;
-    text-align: center;
-}
-
-.instruction-text {
-    color: white;
-    font-size: 16px;
+.instructions p {
+    margin: 10px 0;
+    font-size: 1.1em;
 }
 
 button {
@@ -220,7 +193,6 @@ button:active {
     }
     
     .game-area {
-        width: 100%;
         height: calc(100vh - 200px);
     }
     
@@ -228,7 +200,7 @@ button:active {
         display: flex;
     }
     
-    .instruction-text {
-        font-size: 14px;
+    .instructions p {
+        font-size: 1em;
     }
 } 

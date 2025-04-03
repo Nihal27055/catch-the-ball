@@ -16,6 +16,7 @@ const startGameBtn = document.getElementById('start-game-btn');
 const instructionsToggle = document.getElementById('instructions-toggle');
 const sideInstructions = document.getElementById('side-instructions');
 const closeSideInstructions = document.getElementById('close-side-instructions');
+const startScreen = document.getElementById('start-screen');
 
 // Sound effects
 const catchSound = new Audio('sounds/catch.mp3');
@@ -24,15 +25,15 @@ const levelUpSound = new Audio('sounds/levelup.mp3');
 
 // Game variables
 let score = 0;
-let lives = 3;
+let lives = 10;
 let highScore = 0;
 let gameLoop;
 let isGameRunning = false;
 let playerPosition = 50; // percentage from left
-let playerWidth = 80; // in pixels
+let playerWidth = 100; // in pixels
 let playerSpeed = 5; // percentage per move
 let ballSpeed = 2; // pixels per frame
-let spawnRate = 1000; // milliseconds
+let spawnRate = 1500; // milliseconds
 let lastSpawnTime = 0;
 let balls = [];
 let keysPressed = {};
@@ -106,7 +107,7 @@ function init() {
 function updateDimensions() {
     gameWidth = gameArea.clientWidth;
     gameHeight = gameArea.clientHeight;
-    playerWidth = Math.min(80, gameWidth * 0.2);
+    playerWidth = Math.min(100, gameWidth * 0.2);
     player.style.width = playerWidth + 'px';
 }
 
@@ -146,12 +147,12 @@ function movePlayer(dx) {
 function createBall() {
     const ball = document.createElement('div');
     ball.className = 'balloon';
-    ball.style.left = Math.random() * (gameArea.offsetWidth - 30) + 'px';
+    ball.style.left = Math.random() * (gameArea.offsetWidth - 40) + 'px';
     gameArea.appendChild(ball);
     
     balls.push({
         element: ball,
-        y: -40,
+        y: -50,
         speed: ballSpeed
     });
 }
@@ -549,7 +550,7 @@ function addForestEffect() {
 function restartGame() {
     // Reset game variables
     score = 0;
-    lives = 3;
+    lives = 10;
     level = 1;
     isGameRunning = true;
     playerPosition = 50;
