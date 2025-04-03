@@ -53,6 +53,7 @@ let scoreMultiplier = 1; // Base score multiplier
 let consecutiveCatches = 0; // Track consecutive catches for combo scoring
 let lastCatchTime = 0; // Track timing between catches
 let level = 1; // Current game level
+let backgrounds = ['forest', 'blank', 'ice', 'desert', 'night']; // Different background themes
 
 // Game area dimensions
 let gameWidth;
@@ -224,8 +225,8 @@ function createBalloon() {
     const balloon = document.createElement('div');
     balloon.className = 'balloon';
     
-    // Increased chance for rainbow balloons - now 15% chance regardless of level
-    const rainbowChance = 0.15; // 15% chance for rainbow balloons
+    // Higher chance for rainbow balloons - now 20% chance regardless of level
+    const rainbowChance = 0.20; // 20% chance for rainbow balloons
     const isRainbow = Math.random() < rainbowChance;
     
     // Add variety of balloon colors
@@ -424,7 +425,7 @@ function update(timestamp) {
     const deltaTime = timestamp - lastTime || 16.7;
     lastTime = timestamp;
     
-    // Check for level up based on score - now at 30, 60, 90, etc.
+    // Check for level up based on score - at 30, 60, 90, etc.
     let newLevel = Math.floor(score / 30) + 1; // Level up every 30 points
     if (newLevel > level) {
         level = newLevel;
@@ -443,6 +444,9 @@ function update(timestamp) {
         
         // Add rainbow effect to all balloons
         makeBalloonsRainbow();
+        
+        // Change the background theme based on level
+        changeBackgroundTheme(level);
         
         // Add forest animation effect when leveling up
         addForestEffect();
@@ -735,6 +739,10 @@ function startGame() {
     const existingBalloons = gameArea.querySelectorAll('.balloon');
     existingBalloons.forEach(balloon => balloon.remove());
     
+    // Reset to forest theme (default)
+    document.body.classList.remove('theme-forest', 'theme-blank', 'theme-ice', 'theme-desert', 'theme-night');
+    document.body.classList.add('theme-forest');
+    
     // Start game loop
     isGameRunning = true;
     lastSpawnTime = 0;
@@ -858,6 +866,35 @@ function showPartyPopper() {
             gameArea.removeChild(confettiContainer);
         }
     }, 4000);
+}
+
+// Change the background theme based on level
+function changeBackgroundTheme(level) {
+    // Remove existing theme classes
+    document.body.classList.remove('theme-forest', 'theme-blank', 'theme-ice', 'theme-desert', 'theme-night');
+    
+    // Determine which theme to apply (cycle through themes as level increases)
+    const themeIndex = (level - 1) % backgrounds.length;
+    const theme = backgrounds[themeIndex];
+    
+    // Add the new theme class
+    document.body.classList.add(`theme-${theme}`);
+    
+    // Announce the theme change
+    const themeMessage = document.createElement('div');
+    themeMessage.classList.add('theme-message');
+    themeMessage.textContent = `${theme.charAt(0).toUpperCase() + theme.slice(1)} Theme!`;
+    gameArea.appendChild(themeMessage);
+    
+    // Remove after animation
+    setTimeout(() => {
+        themeMessage.classList.add('fade-out');
+        setTimeout(() => {
+            if (gameArea.contains(themeMessage)) {
+                gameArea.removeChild(themeMessage);
+            }
+        }, 1000);
+    }, 2000);
 }
 
 // Start the game when the page loads
