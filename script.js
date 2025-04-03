@@ -31,6 +31,12 @@ const startGameBtn = document.getElementById('start-game-btn');
 const instructionsToggle = document.getElementById('instructions-toggle') || { addEventListener: function(){} };
 const sideInstructions = document.getElementById('side-instructions') || { classList: { toggle: function(){}, remove: function(){} } };
 const closeSideInstructions = document.getElementById('close-side-instructions') || { addEventListener: function(){} };
+const controlToggle = document.getElementById('control-toggle');
+const joystickContainer = document.querySelector('.joystick-container');
+const leftJoystick = document.getElementById('left-joystick');
+const rightJoystick = document.getElementById('right-joystick');
+const leftJoystickKnob = leftJoystick ? leftJoystick.querySelector('.joystick-knob') : null;
+const rightJoystickKnob = rightJoystick ? rightJoystick.querySelector('.joystick-knob') : null;
 
 // Game variables
 let score = 0;
@@ -98,22 +104,37 @@ function init() {
     }
     
     // Mobile controls
-    if (isMobile && leftControl && rightControl) {
+    if (isMobile) {
+        // Show regular mobile controls by default
         document.querySelector('.mobile-controls').style.display = 'flex';
         
-        // Touch and hold controls for smoother movement
-        leftControl.addEventListener('touchstart', () => startMovePlayer('left'));
-        leftControl.addEventListener('touchend', () => stopMovePlayer('left'));
+        // Show control toggle
+        if (controlToggle) {
+            controlToggle.classList.remove('hidden');
+            controlToggle.addEventListener('click', toggleControlType);
+        }
         
-        rightControl.addEventListener('touchstart', () => startMovePlayer('right'));
-        rightControl.addEventListener('touchend', () => stopMovePlayer('right'));
+        // Standard button controls
+        if (leftControl && rightControl) {
+            // Touch and hold controls for smoother movement
+            leftControl.addEventListener('touchstart', () => startMovePlayer('left'));
+            leftControl.addEventListener('touchend', () => stopMovePlayer('left'));
+            
+            rightControl.addEventListener('touchstart', () => startMovePlayer('right'));
+            rightControl.addEventListener('touchend', () => stopMovePlayer('right'));
+            
+            // Mouse controls (for testing on desktop)
+            leftControl.addEventListener('mousedown', () => startMovePlayer('left'));
+            leftControl.addEventListener('mouseup', () => stopMovePlayer('left'));
+            
+            rightControl.addEventListener('mousedown', () => startMovePlayer('right'));
+            rightControl.addEventListener('mouseup', () => stopMovePlayer('right'));
+        }
         
-        // Mouse controls (for testing on desktop)
-        leftControl.addEventListener('mousedown', () => startMovePlayer('left'));
-        leftControl.addEventListener('mouseup', () => stopMovePlayer('left'));
-        
-        rightControl.addEventListener('mousedown', () => startMovePlayer('right'));
-        rightControl.addEventListener('mouseup', () => stopMovePlayer('right'));
+        // Initialize joysticks
+        if (leftJoystick && rightJoystick) {
+            initJoysticks();
+        }
         
         // Direct touch/drag on game area for more intuitive control
         gameArea.addEventListener('touchmove', handleTouchMove, { passive: false });
@@ -476,6 +497,14 @@ function update(timestamp) {
     }
     if (movingRight) {
         movePlayer(playerSpeed * (deltaTime / 16.67));
+    }
+    
+    // Handle joystick movement
+    if (leftJoystickActive) {
+        movePlayer(leftJoystickValue * playerSpeed * (deltaTime / 16.67));
+    }
+    if (rightJoystickActive) {
+        movePlayer(rightJoystickValue * playerSpeed * (deltaTime / 16.67));
     }
     
     // Spawn new balloons
@@ -895,6 +924,133 @@ function changeBackgroundTheme(level) {
             }
         }, 1000);
     }, 2000);
+}
+
+// Toggle between button controls and joystick controls
+function toggleControlType() {
+    const mobileControls = document.querySelector('.mobile-controls');
+    const joystickContainer = document.querySelector('.joystick-container');
+    const body = document.body;
+    
+    if (joystickContainer.classList.contains('hidden')) {
+        // Switch to joysticks
+        joystickContainer.classList.remove('hidden');
+        body.classList.add('joystick-active');
+        controlToggle.textContent = 'Switch to Buttons';
+    } else {
+        // Switch to buttons
+        joystickContainer.classList.add('hidden');
+        body.classList.remove('joystick-active');
+        controlToggle.textContent = 'Switch to Joysticks';
+    }
+}
+
+// Joystick variables
+let leftJoystickActive = false;
+let rightJoystickActive = false;
+let leftJoystickValue = 0;
+let rightJoystickValue = 0;
+
+// Initialize joystick controls
+function initJoysticks() {
+    // Left joystick (movement)
+    initJoystick(leftJoystick, leftJoystickKnob, (value) => {
+        leftJoystickValue = value;
+        leftJoystickActive = value !== 0;
+    });
+    
+    // Right joystick (alternative control, currently same function)
+    initJoystick(rightJoystick, rightJoystickKnob, (value) => {
+        rightJoystickValue = value;
+        rightJoystickActive = value !== 0;
+    });
+}
+
+// Setup an individual joystick
+function initJoystick(joystickElement, knobElement, callback) {
+    if (!joystickElement || !knobElement) return;
+    
+    const joystickRadius = joystickElement.offsetWidth / 2;
+    const knobRadius = knobElement.offsetWidth / 2;
+    const maxDistance = joystickRadius - knobRadius;
+    
+    // Touch handlers
+    joystickElement.addEventListener('touchstart', handleJoystickStart);
+    joystickElement.addEventListener('touchmove', handleJoystickMove);
+    joystickElement.addEventListener('touchend', handleJoystickEnd);
+    
+    // Mouse handlers (for testing on desktop)
+    joystickElement.addEventListener('mousedown', handleJoystickStart);
+    document.addEventListener('mousemove', handleJoystickMove);
+    document.addEventListener('mouseup', handleJoystickEnd);
+    
+    // Track if this joystick is active
+    let isActive = false;
+    let startX = 0;
+    let startY = 0;
+    
+    function handleJoystickStart(e) {
+        e.preventDefault();
+        isActive = true;
+        
+        // Get joystick position
+        const rect = joystickElement.getBoundingClientRect();
+        startX = rect.left + joystickRadius;
+        startY = rect.top + joystickRadius;
+        
+        // Initial position
+        updateJoystickPosition(e);
+    }
+    
+    function handleJoystickMove(e) {
+        if (!isActive) return;
+        e.preventDefault();
+        updateJoystickPosition(e);
+    }
+    
+    function handleJoystickEnd(e) {
+        if (!isActive) return;
+        e.preventDefault();
+        isActive = false;
+        
+        // Reset joystick position
+        knobElement.style.transform = 'translate(-50%, -50%)';
+        callback(0); // Reset value
+    }
+    
+    function updateJoystickPosition(e) {
+        if (!isActive) return;
+        
+        // Get touch/mouse position
+        let clientX, clientY;
+        if (e.type.startsWith('touch')) {
+            clientX = e.touches[0].clientX;
+            clientY = e.touches[0].clientY;
+        } else {
+            clientX = e.clientX;
+            clientY = e.clientY;
+        }
+        
+        // Calculate distance from center
+        const deltaX = clientX - startX;
+        const deltaY = clientY - startY;
+        const distance = Math.min(maxDistance, Math.sqrt(deltaX * deltaX + deltaY * deltaY));
+        
+        // Calculate angle
+        const angle = Math.atan2(deltaY, deltaX);
+        
+        // Calculate new position
+        const offsetX = Math.cos(angle) * distance;
+        const offsetY = Math.sin(angle) * distance;
+        
+        // Update knob position
+        knobElement.style.transform = `translate(calc(-50% + ${offsetX}px), calc(-50% + ${offsetY}px))`;
+        
+        // For left-right movement, we only care about the X value
+        // Normalize to -1 to 1 range
+        const normalizedX = offsetX / maxDistance;
+        callback(normalizedX);
+    }
 }
 
 // Start the game when the page loads
