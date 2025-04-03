@@ -210,12 +210,45 @@ function handleTouchMove(e) {
     const gameRect = gameArea.getBoundingClientRect();
     const touchX = touch.clientX - gameRect.left;
     
-    // Convert touch position to percentage
+    // Get the control line position
+    const controlLine = document.getElementById('player-control-line');
+    const controlLineRect = controlLine ? controlLine.getBoundingClientRect() : null;
+    
+    // Calculate bowl position based on touch X position
     const newPosition = (touchX / gameWidth) * 100;
     
-    // Clamp the position
-    playerPosition = Math.max(0, Math.min(100, newPosition));
+    // Clamp the position to keep bowl within game area
+    playerPosition = Math.max(playerWidth/2/gameWidth*100, Math.min(100-playerWidth/2/gameWidth*100, newPosition));
     player.style.left = `${playerPosition}%`;
+    
+    // Visual feedback on the control line (add a highlight effect)
+    if (controlLine) {
+        const highlightEffect = document.createElement('div');
+        highlightEffect.style.position = 'absolute';
+        highlightEffect.style.width = '20px';
+        highlightEffect.style.height = '20px';
+        highlightEffect.style.borderRadius = '50%';
+        highlightEffect.style.backgroundColor = 'rgba(255, 255, 255, 0.5)';
+        highlightEffect.style.left = `${touchX - 10}px`;
+        highlightEffect.style.top = `${controlLineRect.top - gameRect.top - 8}px`;
+        highlightEffect.style.pointerEvents = 'none';
+        highlightEffect.style.zIndex = '10';
+        highlightEffect.style.opacity = '0.8';
+        highlightEffect.style.transition = 'opacity 0.5s';
+        
+        // Add to game area
+        gameArea.appendChild(highlightEffect);
+        
+        // Fade out and remove
+        setTimeout(() => {
+            highlightEffect.style.opacity = '0';
+            setTimeout(() => {
+                if (gameArea.contains(highlightEffect)) {
+                    gameArea.removeChild(highlightEffect);
+                }
+            }, 500);
+        }, 100);
+    }
 }
 
 // Update game dimensions
