@@ -1,4 +1,19 @@
-// DOM Elements
+// Sound effects - Use try/catch to prevent errors if sounds don't exist
+let catchSound, missSound, levelUpSound;
+
+try {
+    catchSound = new Audio('sounds/catch.mp3');
+    missSound = new Audio('sounds/miss.mp3');
+    levelUpSound = new Audio('sounds/levelup.mp3');
+} catch (e) {
+    console.log("Error loading sounds:", e);
+    // Create dummy sound objects to avoid errors
+    catchSound = { play: function() {}, load: function() {} };
+    missSound = { play: function() {}, load: function() {} };
+    levelUpSound = { play: function() {}, load: function() {} };
+}
+
+// DOM Elements - Properly check for null elements
 const gameArea = document.getElementById('game-area');
 const player = document.getElementById('player');
 const scoreElement = document.getElementById('score');
@@ -13,14 +28,9 @@ const comboDisplay = document.getElementById('combo-display');
 const comboCountElement = document.getElementById('combo-count');
 const instructionsScreen = document.getElementById('instructions-screen');
 const startGameBtn = document.getElementById('start-game-btn');
-const instructionsToggle = document.getElementById('instructions-toggle');
-const sideInstructions = document.getElementById('side-instructions');
-const closeSideInstructions = document.getElementById('close-side-instructions');
-
-// Sound effects
-const catchSound = new Audio('sounds/catch.mp3');
-const missSound = new Audio('sounds/miss.mp3');
-const levelUpSound = new Audio('sounds/levelup.mp3');
+const instructionsToggle = document.getElementById('instructions-toggle') || { addEventListener: function(){} };
+const sideInstructions = document.getElementById('side-instructions') || { classList: { toggle: function(){}, remove: function(){} } };
+const closeSideInstructions = document.getElementById('close-side-instructions') || { addEventListener: function(){} };
 
 // Game variables
 let score = 0;
@@ -65,11 +75,18 @@ function init() {
     // Event listeners
     document.addEventListener('keydown', handleKeyDown);
     document.addEventListener('keyup', handleKeyUp);
-    startGameBtn.addEventListener('click', startGame);
-    restartBtn.addEventListener('click', restartGame);
+    
+    // Make sure the start button works
+    if (startGameBtn) {
+        startGameBtn.onclick = startGame;
+    }
+    
+    if (restartBtn) {
+        restartBtn.onclick = restartGame;
+    }
     
     // Mobile controls
-    if (isMobile) {
+    if (isMobile && leftControl && rightControl) {
         document.querySelector('.mobile-controls').style.display = 'flex';
         leftControl.addEventListener('touchstart', () => movePlayer(-playerSpeed));
         rightControl.addEventListener('touchstart', () => movePlayer(playerSpeed));
@@ -85,15 +102,23 @@ function init() {
     window.addEventListener('resize', updateDimensions);
     
     // Hide combo display initially
-    comboDisplay.classList.add('hidden');
+    if (comboDisplay) {
+        comboDisplay.classList.add('hidden');
+    }
     
     // Show instructions screen at startup
-    instructionsScreen.style.display = 'flex';
+    if (instructionsScreen) {
+        instructionsScreen.style.display = 'flex';
+    }
     
     // Preload sounds
-    catchSound.load();
-    missSound.load();
-    levelUpSound.load();
+    try {
+        catchSound.load();
+        missSound.load();
+        levelUpSound.load();
+    } catch (e) {
+        console.log("Error preloading sounds:", e);
+    }
     
     // Add keyboard shortcut for instructions (press 'I' key)
     document.addEventListener('keydown', function(e) {
@@ -101,6 +126,8 @@ function init() {
             toggleSideInstructions();
         }
     });
+    
+    console.log("Game initialized successfully!");
 }
 
 // Update game dimensions
@@ -497,13 +524,18 @@ function showInstructions() {
 
 // Start the game after viewing instructions
 function startGame() {
+    console.log("Starting game...");
+    
     // Hide instructions screen
-    instructionsScreen.style.display = 'none';
+    if (instructionsScreen) {
+        instructionsScreen.style.display = 'none';
+    }
     
     // Reset game state
     score = 0;
     lives = 10;
     balls = [];
+    level = 1;
     scoreElement.textContent = score;
     livesElement.textContent = lives;
     playerPosition = 50;
@@ -518,6 +550,8 @@ function startGame() {
     lastSpawnTime = 0;
     lastTime = 0;
     gameLoop = requestAnimationFrame(update);
+    
+    console.log("Game started!");
 }
 
 // Toggle side instructions panel
