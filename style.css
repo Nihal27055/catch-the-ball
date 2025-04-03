@@ -150,6 +150,7 @@ h1 {
     color: white;
     border-radius: 10px;
     padding: 20px;
+    z-index: 1000;
 }
 
 .instructions {
@@ -162,9 +163,9 @@ h1 {
     font-size: 1.1em;
 }
 
-button {
-    padding: 12px 25px;
-    font-size: 1.1em;
+.btn, button {
+    padding: 15px 30px;
+    font-size: 1.2em;
     background: linear-gradient(to bottom, #4CAF50, #2E7D32);
     color: white;
     border: none;
@@ -172,15 +173,22 @@ button {
     cursor: pointer;
     transition: all 0.3s;
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    margin: 15px 0;
 }
 
-button:hover {
+.btn:hover, button:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+    background: linear-gradient(to bottom, #5CBA60, #3E8D42);
 }
 
-button:active {
+.btn:active, button:active {
     transform: translateY(1px);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.hidden {
+    display: none !important;
 }
 
 /* Mobile Responsive */
