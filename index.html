@@ -22,6 +22,8 @@
         </div>
         <div id="game-area" class="game-area">
             <div id="player" class="player"></div>
+            <!-- Player control line indicator -->
+            <div id="player-control-line" class="player-control-line"></div>
             <!-- Combo Display -->
             <div id="combo-display" class="combo-display hidden">
                 <span>Combo x<span id="combo-count">1</span></span>
@@ -34,19 +36,6 @@
             <div id="right-control" class="control-btn">→</div>
         </div>
         
-        <!-- Joystick Controls -->
-        <div class="joystick-container hidden">
-            <div id="left-joystick" class="joystick">
-                <div class="joystick-knob"></div>
-            </div>
-            <div id="right-joystick" class="joystick">
-                <div class="joystick-knob"></div>
-            </div>
-        </div>
-        
-        <!-- Control toggle for mobile -->
-        <button id="control-toggle" class="hidden">Switch to Joysticks</button>
-        
         <!-- Side Instructions -->
         <div id="instructions-toggle" class="instructions-toggle">?</div>
         <div id="side-instructions" class="side-instructions">
@@ -58,7 +47,7 @@
                 </div>
                 <div class="instruction-item">
                     <div class="instruction-icon">📱</div>
-                    <div class="instruction-text">Use buttons or joysticks on mobile</div>
+                    <div class="instruction-text">Touch and drag on screen to move bowl</div>
                 </div>
                 <div class="instruction-item">
                     <div class="instruction-icon">🎯</div>
@@ -87,7 +76,7 @@
                     </div>
                     <div class="instruction-item">
                         <div class="instruction-icon">📱</div>
-                        <div class="instruction-text">On mobile, use the buttons or joysticks at the bottom of the screen</div>
+                        <div class="instruction-text">On mobile, touch and drag anywhere on the screen to move the bowl</div>
                     </div>
                     <div class="instruction-item">
                         <div class="instruction-icon">🎯</div>
@@ -98,7 +87,7 @@
                         <div class="instruction-text">You have 10 lives - don't let balloons hit the ground!</div>
                     </div>
                 </div>
-                <button id="start-game-btn" onclick="startGame()">Start Game</button>
+                <button id="start-game-btn">Start Game</button>
             </div>
         </div>
     </div>
