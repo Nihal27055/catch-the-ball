@@ -33,6 +33,7 @@ let playerWidth = 80; // in pixels
 let playerSpeed = 5; // percentage per move
 let ballSpeed = 1.5; // pixels per frame
 let spawnRate = 1500; // milliseconds
+let spawnRateMin = 800; // minimum spawn rate
 let lastSpawnTime = 0;
 let balls = [];
 let keysPressed = {};
@@ -62,7 +63,8 @@ function init() {
     livesElement.textContent = lives;
     
     // Event listeners
-    document.addEventListener('keydown', handleKeyPress);
+    document.addEventListener('keydown', handleKeyDown);
+    document.addEventListener('keyup', handleKeyUp);
     startGameBtn.addEventListener('click', startGame);
     restartBtn.addEventListener('click', restartGame);
     
@@ -86,7 +88,7 @@ function init() {
     comboDisplay.classList.add('hidden');
     
     // Show instructions screen at startup
-    instructionsScreen.classList.remove('hidden');
+    instructionsScreen.style.display = 'flex';
     
     // Preload sounds
     catchSound.load();
@@ -103,37 +105,19 @@ function init() {
 
 // Update game dimensions
 function updateDimensions() {
-    gameWidth = gameArea.clientWidth;
-    gameHeight = gameArea.clientHeight;
+    gameWidth = gameArea.offsetWidth;
+    gameHeight = gameArea.offsetHeight;
     playerWidth = Math.min(80, gameWidth * 0.2);
     player.style.width = playerWidth + 'px';
 }
 
-function handleKeyPress(e) {
-    if (!isGameRunning) return;
-    
-    if (e.key === 'ArrowLeft') {
-        movePlayer(-playerSpeed);
-    } else if (e.key === 'ArrowRight') {
-        movePlayer(playerSpeed);
-    }
+// Handle keyboard input
+function handleKeyDown(e) {
+    keysPressed[e.key] = true;
 }
 
-// Touch move handler for mobile
-function handleTouchMove(e) {
-    e.preventDefault();
-    const touch = e.touches[0];
-    const gameRect = gameArea.getBoundingClientRect();
-    const touchX = touch.clientX - gameRect.left;
-    
-    // Convert to percentage
-    playerPosition = (touchX / gameWidth) * 100;
-    
-    // Clamp the position
-    playerPosition = Math.max(playerWidth / 2 / gameWidth * 100, Math.min(100 - playerWidth / 2 / gameWidth * 100, playerPosition));
-    
-    // Update player position
-    player.style.left = `${playerPosition}%`;
+function handleKeyUp(e) {
+    keysPressed[e.key] = false;
 }
 
 // Move the player
@@ -142,7 +126,7 @@ function movePlayer(dx) {
     player.style.left = `${playerPosition}%`;
 }
 
-// Create a new ball
+// Create a new balloon
 function createBalloon() {
     const balloon = document.createElement('div');
     balloon.className = 'balloon';
@@ -268,7 +252,7 @@ function update(timestamp) {
     if (!isGameRunning) return;
     
     // Calculate delta time for smoother movement
-    const deltaTime = timestamp - lastTime;
+    const deltaTime = timestamp - lastTime || 16.7;
     lastTime = timestamp;
     
     // Check for level up based on score
@@ -289,23 +273,21 @@ function update(timestamp) {
         updateComboDisplay();
     }
     
-    // Handle keyboard movement with smoother movement
-    if (keysPressed['ArrowLeft'] || keysPressed['a']) {
+    // Handle keyboard movement
+    if (keysPressed['ArrowLeft']) {
         movePlayer(-playerSpeed);
     }
-    if (keysPressed['ArrowRight'] || keysPressed['d']) {
+    if (keysPressed['ArrowRight']) {
         movePlayer(playerSpeed);
     }
     
-    // Spawn new balls based on level - more aggressive spawn rate reduction
-    let currentSpawnRate = Math.max(spawnRateMin, spawnRate - (level - 1) * 300);
-    
-    if (timestamp - lastSpawnTime > currentSpawnRate) {
+    // Spawn new balloons
+    if (timestamp - lastSpawnTime > spawnRate) {
         createBalloon();
         lastSpawnTime = timestamp;
     }
     
-    // Update balls with delta time for smoother movement
+    // Update balloons
     for (let i = balls.length - 1; i >= 0; i--) {
         const ball = balls[i];
         
@@ -315,94 +297,45 @@ function update(timestamp) {
         
         // Ball position in pixels
         const ballLeft = parseInt(ball.element.style.left);
-        const ballCenter = ballLeft + 15; // Assuming 15px width
-        const ballBottom = ball.y + 40; // Assuming 40px height
+        const ballCenter = ballLeft + 15;
+        const ballBottom = ball.y + 40;
         
         // Player position in pixels
         const playerLeft = (playerPosition / 100) * gameWidth - playerWidth / 2;
         const playerRight = playerLeft + playerWidth;
-        const playerTop = gameHeight - 60; // Line top position
+        const playerTop = gameHeight - 60; // Bowl top position
         
-        // Improved collision detection with the line
-        const isCollisionX = ballCenter > playerLeft && ballCenter < playerRight;
-        const isCollisionY = ballBottom > playerTop && ballBottom < playerTop + 40;
-        
-        if (isCollisionX && isCollisionY) {
-            // Calculate points based on speed
-            const catchSpeed = timestamp - lastCatchTime;
-            let speedBonus = 1;
-            
-            // If catching quickly (less than 1 second between catches)
-            if (lastCatchTime > 0 && catchSpeed < 1000) {
-                // Enhanced speed bonus calculation
-                speedBonus = Math.max(2, Math.floor(1000 / catchSpeed));
-                consecutiveCatches++;
-                // Increase multiplier for consecutive quick catches
-                scoreMultiplier = Math.min(5, 1 + Math.floor(consecutiveCatches / 3));
-            } else {
-                // Reset combo if too slow
-                consecutiveCatches = 1;
-                scoreMultiplier = 1;
+        // Collision detection with the bowl
+        if (ballBottom >= playerTop && ballBottom <= playerTop + 40) {
+            if (ballCenter >= playerLeft && ballCenter <= playerRight) {
+                // Balloon caught
+                score++;
+                scoreElement.textContent = score;
+                
+                // Update high score if needed
+                if (score > highScore) {
+                    highScore = score;
+                    highScoreElement.textContent = highScore;
+                    localStorage.setItem('catchBalloonHighScore', highScore);
+                }
+                
+                // Remove balloon
+                ball.element.remove();
+                balls.splice(i, 1);
+                
+                // Play catch sound
+                playSound('catch');
+                continue;
             }
-            
-            // Calculate final points
-            const points = speedBonus;
-            
-            // Update score
-            score += points;
-            scoreElement.textContent = score;
-            
-            // Update high score if needed
-            if (score > highScore) {
-                highScore = score;
-                highScoreElement.textContent = highScore;
-                localStorage.setItem('catchBalloonHighScore', highScore);
-            }
-            
-            // Update last catch time for combo calculation
-            lastCatchTime = timestamp;
-            
-            // Get balloon color for the effect
-            let ballColor = '#ff0000'; // default red
-            if (ball.element.classList.contains('blue')) ballColor = '#0066ff';
-            if (ball.element.classList.contains('green')) ballColor = '#00cc00';
-            if (ball.element.classList.contains('yellow')) ballColor = '#ffcc00';
-            if (ball.element.classList.contains('purple')) ballColor = '#9900cc';
-            if (ball.element.classList.contains('orange')) ballColor = '#ff6600';
-            
-            // Create visual effects
-            createCatchEffect(ballCenter, playerTop, ballColor);
-            
-            // Update score popup to show actual points
-            showScoreIncrease(ballCenter, playerTop - 20, points);
-            
-            // Apply the catch animation to the line
-            player.style.animation = 'catchBounce 0.3s ease-out';
-            
-            // Remove animation after it completes
-            setTimeout(() => {
-                player.style.animation = '';
-            }, 300);
-            
-            // Update combo display
-            updateComboDisplay();
-            
-            // Remove the ball
-            ball.element.remove();
-            balls.splice(i, 1);
-            
-            // Play catch sound
-            playSound('catch');
-            continue;
         }
         
-        // Check if ball reached the red line
-        if (ball.y > gameHeight - 50) {
-            // Ball missed
+        // Check if balloon reached the bottom
+        if (ball.y > gameHeight) {
+            // Balloon missed
             lives--;
             livesElement.textContent = lives;
             
-            // Remove the ball
+            // Remove balloon
             ball.element.remove();
             balls.splice(i, 1);
             
@@ -558,14 +491,32 @@ function restartGame() {
 // Show instructions again
 function showInstructions() {
     isGameRunning = false;
-    instructionsScreen.classList.remove('hidden');
+    instructionsScreen.style.display = 'flex';
     cancelAnimationFrame(gameLoop);
 }
 
 // Start the game after viewing instructions
 function startGame() {
-    instructionsScreen.classList.add('hidden');
+    // Hide instructions screen
+    instructionsScreen.style.display = 'none';
+    
+    // Reset game state
+    score = 0;
+    lives = 10;
+    balls = [];
+    scoreElement.textContent = score;
+    livesElement.textContent = lives;
+    playerPosition = 50;
+    player.style.left = `${playerPosition}%`;
+    
+    // Clear existing balloons
+    const existingBalloons = gameArea.querySelectorAll('.balloon');
+    existingBalloons.forEach(balloon => balloon.remove());
+    
+    // Start game loop
     isGameRunning = true;
+    lastSpawnTime = 0;
+    lastTime = 0;
     gameLoop = requestAnimationFrame(update);
 }
 

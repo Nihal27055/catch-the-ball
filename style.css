@@ -274,6 +274,10 @@ h1 {
     z-index: 100;
 }
 
+.instructions-screen.hidden {
+    display: none;
+}
+
 .instructions-content {
     background: rgba(255, 255, 255, 0.1);
     padding: 30px;
