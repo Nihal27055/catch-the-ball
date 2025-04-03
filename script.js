@@ -60,10 +60,10 @@ function init() {
     document.addEventListener('keyup', handleKeyUp);
     
     // Add event listeners for mobile controls
-    leftControl.addEventListener('touchstart', () => movePlayer('left'));
-    rightControl.addEventListener('touchstart', () => movePlayer('right'));
-    leftControl.addEventListener('mousedown', () => movePlayer('left'));
-    rightControl.addEventListener('mousedown', () => movePlayer('right'));
+    leftControl.addEventListener('touchstart', () => movePlayer(-playerSpeed));
+    rightControl.addEventListener('touchstart', () => movePlayer(playerSpeed));
+    leftControl.addEventListener('mousedown', () => movePlayer(-playerSpeed));
+    rightControl.addEventListener('mousedown', () => movePlayer(playerSpeed));
     
     // Add restart button event listener
     restartBtn.addEventListener('click', restartGame);
@@ -137,17 +137,8 @@ function handleTouchMove(e) {
 }
 
 // Move the player
-function movePlayer(direction) {
-    if (direction === 'left') {
-        playerPosition -= playerSpeed;
-    } else if (direction === 'right') {
-        playerPosition += playerSpeed;
-    }
-    
-    // Clamp the position
-    playerPosition = Math.max(playerWidth / 2 / gameWidth * 100, Math.min(100 - playerWidth / 2 / gameWidth * 100, playerPosition));
-    
-    // Update player position
+function movePlayer(dx) {
+    playerPosition = Math.max(0, Math.min(100, playerPosition + dx));
     player.style.left = `${playerPosition}%`;
 }
 
@@ -296,10 +287,10 @@ function update(timestamp) {
     
     // Handle keyboard movement with smoother movement
     if (keysPressed['ArrowLeft'] || keysPressed['a']) {
-        movePlayer('left');
+        movePlayer(-playerSpeed);
     }
     if (keysPressed['ArrowRight'] || keysPressed['d']) {
-        movePlayer('right');
+        movePlayer(playerSpeed);
     }
     
     // Spawn new balls based on level - more aggressive spawn rate reduction
