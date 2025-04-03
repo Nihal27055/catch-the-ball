@@ -32,9 +32,6 @@ const instructionsToggle = document.getElementById('instructions-toggle') || { a
 const sideInstructions = document.getElementById('side-instructions') || { classList: { toggle: function(){}, remove: function(){} } };
 const closeSideInstructions = document.getElementById('close-side-instructions') || { addEventListener: function(){} };
 const pauseBtn = document.getElementById('pause-btn');
-const pauseScreen = document.getElementById('pause-screen');
-const resumeBtn = document.getElementById('resume-btn');
-const restartFromPauseBtn = document.getElementById('restart-from-pause-btn');
 
 // Game variables
 let score = 0;
@@ -105,17 +102,6 @@ function init() {
     // Pause functionality
     if (pauseBtn) {
         pauseBtn.addEventListener('click', togglePause);
-    }
-    
-    if (resumeBtn) {
-        resumeBtn.addEventListener('click', resumeGame);
-    }
-    
-    if (restartFromPauseBtn) {
-        restartFromPauseBtn.addEventListener('click', function() {
-            pauseScreen.classList.add('hidden');
-            restartGame();
-        });
     }
     
     // Add keyboard shortcut for pause (press 'P' key)
@@ -210,17 +196,55 @@ function pauseGame() {
     isPaused = true;
     cancelAnimationFrame(gameLoop);
     pauseBtn.classList.add('paused');
-    pauseScreen.classList.remove('hidden');
+    pauseBtn.setAttribute('title', 'Resume Game');
+    
+    // Show simple pause message
+    const pauseMessage = document.createElement('div');
+    pauseMessage.id = 'pause-message';
+    pauseMessage.style.position = 'absolute';
+    pauseMessage.style.top = '50%';
+    pauseMessage.style.left = '50%';
+    pauseMessage.style.transform = 'translate(-50%, -50%)';
+    pauseMessage.style.background = 'rgba(0, 0, 0, 0.7)';
+    pauseMessage.style.color = 'white';
+    pauseMessage.style.padding = '20px';
+    pauseMessage.style.borderRadius = '10px';
+    pauseMessage.style.fontSize = '24px';
+    pauseMessage.style.zIndex = '100';
+    
+    // Add restart button directly in the pause message
+    pauseMessage.innerHTML = `
+        <div style="text-align: center; margin-bottom: 20px;">Game Paused</div>
+        <button id="restart-now-btn" style="display: block; margin: 0 auto; padding: 10px 20px; background: #F44336; border: none; color: white; border-radius: 5px; cursor: pointer;">Restart Game</button>
+    `;
+    
+    gameArea.appendChild(pauseMessage);
+    
+    // Add event listener to the restart button
+    document.getElementById('restart-now-btn').addEventListener('click', function() {
+        // Remove pause message
+        const pauseMsg = document.getElementById('pause-message');
+        if (pauseMsg && gameArea.contains(pauseMsg)) {
+            gameArea.removeChild(pauseMsg);
+        }
+        restartGame();
+    });
 }
 
 // Resume the game
 function resumeGame() {
     if (!isPaused) return;
     
+    // Remove pause message if it exists
+    const pauseMsg = document.getElementById('pause-message');
+    if (pauseMsg && gameArea.contains(pauseMsg)) {
+        gameArea.removeChild(pauseMsg);
+    }
+    
     isPaused = false;
     lastTime = 0; // Reset time to avoid huge delta time after pause
     pauseBtn.classList.remove('paused');
-    pauseScreen.classList.add('hidden');
+    pauseBtn.setAttribute('title', 'Pause Game');
     gameLoop = requestAnimationFrame(update);
 }
 
@@ -820,6 +844,12 @@ function startGame() {
         instructionsScreen.style.display = 'none';
     }
     
+    // Remove any existing pause message
+    const pauseMsg = document.getElementById('pause-message');
+    if (pauseMsg && gameArea.contains(pauseMsg)) {
+        gameArea.removeChild(pauseMsg);
+    }
+    
     // Reset game state
     score = 0;
     lives = 10;
@@ -833,6 +863,7 @@ function startGame() {
     player.style.left = `${playerPosition}%`;
     isPaused = false;
     pauseBtn.classList.remove('paused');
+    pauseBtn.setAttribute('title', 'Pause Game');
     
     // Clear existing balloons
     const existingBalloons = gameArea.querySelectorAll('.balloon');

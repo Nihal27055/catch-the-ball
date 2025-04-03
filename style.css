@@ -1082,6 +1082,7 @@ body.theme-night .game-area {
     display: flex;
     justify-content: center;
     align-items: center;
+    transition: all 0.3s ease;
 }
 
 .pause-btn::before, 
@@ -1092,9 +1093,14 @@ body.theme-night .game-area {
     height: 16px;
     background-color: white;
     margin: 0 2px;
+    transition: all 0.3s ease;
 }
 
 /* Play Button (when paused) */
+.pause-btn.paused {
+    background-color: rgba(76, 175, 80, 0.8);  /* Green background when paused */
+}
+
 .pause-btn.paused::before {
     width: 0;
     height: 0;
