@@ -43,24 +43,36 @@ h1 {
     border-radius: 5px;
 }
 
-.player-line {
-    width: 100px;
-    height: 10px;
+.player {
+    width: 80px;
+    height: 40px;
     background-color: #007bff;
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
-    border-radius: 5px;
+    border-radius: 0 0 40px 40px;
+    transition: left 0.1s ease;
 }
 
-.ball {
+.balloon {
     width: 30px;
-    height: 30px;
+    height: 40px;
     background-color: #ff4444;
-    border-radius: 50%;
     position: absolute;
-    top: -30px;
+    top: -40px;
+    border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+}
+
+.balloon::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 2px;
+    height: 10px;
+    background-color: #555;
 }
 
 .controls {

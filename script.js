@@ -30,11 +30,9 @@ let gameLoop;
 let isGameRunning = false;
 let playerPosition = 50; // percentage from left
 let playerWidth = 80; // in pixels
-let playerSpeed = 5; // percentage per move (increased from 5 for smoother movement)
-let baseBallSpeed = 2; // base pixels per frame (reduced for easier gameplay)
-let ballSpeedIncrement = 0.05; // increased from 0.02 for more noticeable level difficulty
-let spawnRate = 1000; // milliseconds (increased for easier start)
-let spawnRateMin = 1000;
+let playerSpeed = 5; // percentage per move
+let ballSpeed = 2; // pixels per frame
+let spawnRate = 1000; // milliseconds
 let lastSpawnTime = 0;
 let balls = [];
 let keysPressed = {};
@@ -156,47 +154,14 @@ function movePlayer(direction) {
 // Create a new ball
 function createBall() {
     const ball = document.createElement('div');
-    ball.classList.add('balloon');
-    
-    // Random position
-    const position = Math.random() * 100;
-    
-    // Forest-themed balloon colors
-    const colors = ['red', 'blue', 'green', 'yellow', 'purple', 'orange'];
-    const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    ball.classList.add(randomColor);
-    
-    // Randomly add a string to some balloons for a more realistic look
-    if (Math.random() > 0.5) {
-        const string = document.createElement('div');
-        string.classList.add('balloon-string');
-        ball.appendChild(string);
-    }
-    
-    ball.style.left = `${position}%`;
-    ball.style.top = '0';
-    
+    ball.className = 'balloon';
+    ball.style.left = Math.random() * (gameArea.offsetWidth - 30) + 'px';
     gameArea.appendChild(ball);
     
-    // Calculate ball speed based on level
-    // More noticeable speed increase per level
-    let calculatedSpeed = baseBallSpeed + (level - 1) * ballSpeedIncrement;
-    
-    // Add small random variation
-    calculatedSpeed += Math.random() * 0.1;
-    
-    // Ensure speed doesn't exceed maximum
-    calculatedSpeed = Math.min(calculatedSpeed, 3); // Increased max speed from 2 to 3
-    
-    // Add to balls array
     balls.push({
         element: ball,
-        position: position,
-        top: 0,
-        speed: calculatedSpeed,
-        width: 60, // Updated balloon width
-        height: 80, // Updated balloon height
-        color: randomColor
+        y: -40,
+        speed: ballSpeed
     });
 }
 
@@ -350,13 +315,13 @@ function update(timestamp) {
         const ball = balls[i];
         
         // Move ball down with delta time adjustment
-        ball.top += ball.speed * (deltaTime / 16.67); // normalize to ~60fps
-        ball.element.style.top = `${ball.top}px`;
+        ball.y += ball.speed * (deltaTime / 16.67); // normalize to ~60fps
+        ball.element.style.top = ball.y + 'px';
         
         // Ball position in pixels
-        const ballLeft = (ball.position / 100) * gameWidth;
-        const ballCenter = ballLeft + ball.width / 2;
-        const ballBottom = ball.top + ball.height;
+        const ballLeft = parseInt(ball.element.style.left);
+        const ballCenter = ballLeft + 30; // Assuming 30px width
+        const ballBottom = ball.y + 40; // Assuming 40px height
         
         // Player position in pixels
         const playerLeft = (playerPosition / 100) * gameWidth - playerWidth / 2;
@@ -428,7 +393,7 @@ function update(timestamp) {
             updateComboDisplay();
             
             // Remove the ball
-            gameArea.removeChild(ball.element);
+            ball.element.remove();
             balls.splice(i, 1);
             
             // Play catch sound
@@ -437,13 +402,13 @@ function update(timestamp) {
         }
         
         // Check if ball reached the red line
-        if (ball.top > gameHeight - 50) {
+        if (ball.y > gameHeight - 50) {
             // Ball missed
             lives--;
             livesElement.textContent = lives;
             
             // Remove the ball
-            gameArea.removeChild(ball.element);
+            ball.element.remove();
             balls.splice(i, 1);
             
             // Play miss sound
@@ -609,7 +574,7 @@ function restartGame() {
     
     // Clear balls
     balls.forEach(ball => {
-        gameArea.removeChild(ball.element);
+        ball.element.remove();
     });
     balls = [];
     
